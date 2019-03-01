@@ -1,0 +1,123 @@
+<div class="div-home">
+ <!-- <mat-grid-list [cols]="breakpoint" class="grid1" rowHeight="2:0.5" (window:resize)="onResize($event)">
+            <mat-grid-tile>
+              <div class="fa-logo fa-icon-color ">
+                  <mat-icon class="fa fa-medal"></mat-icon>
+              </div>
+              <div class="fa-body">
+                <h5>Rank</h5>
+                <div>description</div>
+              </div>
+            </mat-grid-tile>
+            <mat-grid-tile>
+                <div class="fa-logo fa-icon-color ">
+                    <mat-icon class="fa fa-trophy"></mat-icon>
+                </div>
+                <div class="fa-body">
+                  <h5>Score</h5>
+                  <div>description</div>
+                </div>
+              </mat-grid-tile>
+              <mat-grid-tile>
+                  <div class="fa-logo fa-icon-color ">
+                      <mat-icon class="fa fa-clipboard-list"></mat-icon>
+                  </div>
+                  <div class="fa-body">
+                    <h5>Attempted</h5>
+                    <div>description</div>
+                  </div>
+                </mat-grid-tile>
+                <mat-grid-tile>
+                    <div class="fa-logo fa-icon-color ">
+                        <mat-icon class="fa fa-medal"></mat-icon>
+                    </div>
+                    <div class="fa-body">
+                      <h5>Accuracy</h5>
+                      <div>description</div>
+                    </div>
+                  </mat-grid-tile>
+                  <mat-grid-tile>
+                      <div class="fa-logo fa-icon-color ">
+                          <mat-icon class="fa fa-percent"></mat-icon>
+                      </div>
+                      <div class="fa-body">
+                        <h5>Percentile</h5>
+                        <div>description</div>
+                      </div>
+                    </mat-grid-tile>
+       
+ </mat-grid-list> -->
+  <div class="row mat-grid-list">
+    <div class="h4-text">
+      <h4>Quick Summary</h4>
+    </div>
+    <div class="col-12">
+      <div class="div-float">
+          <div class="fa-logo fa-icon-color div-sec-float">
+              <mat-icon class="fa fa-medal"></mat-icon>
+          </div>
+          <div class="fa-body div-sec-float">
+            <h5><em>3283</em> / 3680</h5>
+            <div class="fa-name-text">Rank</div>
+          </div>
+      </div>
+       <div class="div-float">
+          <div class="fa-logo fa-icon-color div-sec-float ">
+              <mat-icon class="fa fa-trophy"></mat-icon>
+          </div>
+          <div class="fa-body div-sec-float">
+            <h5><em>{{userScore}}</em> / {{totalQues}}</h5>
+            <div class="fa-name-text">Score</div>
+          </div>
+       </div> 
+        <div class="div-float">
+            <div class="fa-logo fa-icon-color div-sec-float">
+                <mat-icon class="fa fa-clipboard-list"></mat-icon>
+            </div>
+            <div class="fa-body div-sec-float">
+              <h5><em>{{attemptedQues}}</em>  / {{totalQues}}</h5>
+              <div class="fa-name-text">Attempted</div>
+            </div>
+        </div>
+        <div class="div-float">
+            <div class="fa-logo fa-icon-color div-sec-float">
+                <mat-icon class="fa fa-bullseye"></mat-icon>
+            </div>
+            <div class="fa-body div-sec-float">
+              <h5><em>{{accuracy}}</em>%</h5>
+              <div class="fa-name-text">Accuracy</div>
+            </div>
+        </div>
+       <div class="div-float">
+          <div class="fa-logo fa-icon-color div-sec-float">
+              <mat-icon class="fa fa-percent"></mat-icon>
+          </div>
+          <div class="fa-body div-sec-float">
+            <h5><em>{{accuracy}}</em>%</h5>
+            <div class="fa-name-text">Percentile</div>
+          </div>
+       </div>
+        
+    </div>
+  </div>
+  <hr>
+  <div class="mat-grid-list">
+      <div class="h4-text">
+          <h4>Compare Sectional Summary</h4>
+      </div>
+  </div>
+  <div class="row-horizontal">
+          <app-accuracy [score]="userScore" class="stats-div"></app-accuracy> 
+          <app-attempted [accuracy]="accuracy" class="stats-div"></app-attempted> 
+          <app-score [attemptedQue]="attemptedQues" [totalQue]="totalQues" class="stats-div"></app-score>  
+          <app-time class="stats-div"></app-time>
+   </div>
+   <hr>
+   <div class="mat-grid-list">
+    <div class="h4-text">
+        <h4>Marks Graph</h4>
+    </div>
+    <app-linechart></app-linechart>
+  </div>
+  <hr>
+</div>

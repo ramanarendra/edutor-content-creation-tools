@@ -1,0 +1,23 @@
+<div class="container-fluid ">
+  <div class="tabs">
+      <button (click)="score()" id="score" class="btn btn-outline-primary tab-horizontal" type="button" >Score</button>
+      <button (click)="accuracy()" id="accuracy" class="btn btn-outline-primary tab-horizontal" type="button" >Accuracy</button>
+      <button (click)="attempted()" id="attempted" class="btn btn-outline-primary tab-horizontal" type="button" >Attempted</button>
+      <button (click)="time()" id="time" class="btn btn-outline-primary tab-horizontal" type="button" >Time</button>
+    
+  </div>
+ 
+</div>
+<div class="row">
+    <div class="chart-container col-xs-12 container">
+        <div *ngIf="chart" class="canvas-holder">
+          <canvas id="chart" class="chartjs-render-monitor">{{ chart }}</canvas>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="chart-container  ">
+    <div *ngIf="chart" class="canvas-holder container">
+      <canvas id="canvas" class="chartjs-render-monitor">{{ chart }}</canvas>
+    </div>
+</div> -->

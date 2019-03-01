@@ -1,0 +1,59 @@
+<div class="container-fluids">
+  <!-- <img class="image-logo img-responsive" width="150" alt="ignitorlogo" src="https://s.cdpn.io/3/kiwi.svg"> -->
+  <h2 class="h2-text-color">Login</h2>
+  <!-- {{registrationFrom.value | json}} -->
+  <form [formGroup]="registrationFrom" #userForm="ngForm">
+      <div class="form-group">
+          
+        <label class="lable-text-color">Username</label>
+        <input [class.invalid-color]="userNAME.invalid &&
+        userNAME.touched"
+           formControlName="userName" type="text" class="form-control">
+           <div *ngIf="userNAME.invalid &&
+           userNAME.touched">
+             <small class="danger-text-color" *ngIf="userNAME.errors?.required">Username is required</small>
+             <small class="danger-text-color" *ngIf="userNAME.errors?.minlength">Check Username length</small>
+           </div>
+      </div> 
+      <div class="form-group">
+        <label class="lable-text-color">Password</label>
+        <input [class.invalid-color]="registrationFrom.get('password').invalid &&
+        registrationFrom.get('password').touched"
+        formControlName="password" type="password" class="form-control">
+      <div *ngIf="registrationFrom.get('password').invalid &&
+      registrationFrom.get('password').touched">
+        <small class="danger-text-color" *ngIf="registrationFrom.get('password').errors?.required">password is required</small>
+        <small class="danger-text-color" *ngIf="registrationFrom.get('password').errors?.minlength">password length</small>
+      </div>
+      </div> 
+      <!-- <div class="form-group">
+        <label>Confirm Password</label>
+        <input formControlName="confirmPassword" type="password" class="form-control">
+      </div> 
+      <div formGroupName="address">
+        <div class="form-group">
+          <label>City</label>
+          <input formControlName="city" type="text" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>State</label>
+          <input formControlName="state" type="text" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>PIN</label>
+          <input formControlName="pin" type="text" class="form-control">
+        </div>
+      </div> -->
+      <div>
+          <button [disabled]= "userForm.form.invalid" (click)="logintoflix()" type="submit" class="btn btn-primary active btn-block">Login</button>
+          
+      </div>
+      <div>
+        <br/>
+          <p *ngIf = "showAlert" class="alert alert-danger alert-dismissable text-center" >{{result}}</p>
+  
+      </div>
+      <!-- <button (click)="loadApiData()" type="button" class="btn btn-secondary ml-2">Load Data</button> -->
+  </form>
+
+  </div>

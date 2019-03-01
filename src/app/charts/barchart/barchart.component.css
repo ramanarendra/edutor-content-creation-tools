@@ -1,0 +1,20 @@
+#chart-name {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .card-spacing {
+    margin: 10px;
+  }
+  #canvas, #doughnut, #pie {
+    width: 100% !important;
+    max-width: 600px;
+    height: auto !important;
+    float: left;
+  
+    text-align: center;  
+    font-size: 20px; 
+    font-weight: bold; 
+    margin: 20px;
+    
+  }

@@ -1,0 +1,36 @@
+.div-attempted{
+    margin: 10px;
+    width: 300px;
+    border-radius: 20%;
+}
+.card-title {
+    background: orange;    
+    color: white;
+    display: flex;
+    align-items: center;
+}
+.float-left {
+    float: left;
+    align-items: left;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.float-left h6{
+    margin: 10px 0 0 10px;
+}
+.float-left p{
+    margin: 1px 0 10px 10px;
+}
+.card-description {
+    font-size: 12px;
+    font-weight: 400;
+    color: #86a1ae;
+    margin: 10px;
+    border-bottom: 1px solid #86a1ae;
+}
+em{
+    color:black;
+    font-size: 14px;
+    font-weight: bold;
+    font-style: normal;
+}

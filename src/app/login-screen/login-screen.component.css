@@ -1,0 +1,40 @@
+.container-fluids{
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    margin-bottom: 50px;
+    background: #2774AE;
+    padding: 10px;
+}
+.invalid-color{
+    border-style: solid;
+    
+    border-color: red;
+}
+.danger-text-color{
+   
+    color: red;
+}
+
+.h2-text-color{
+    color: white;
+    text-align: center;
+}
+.image-logo{
+    width: 150;
+    height: 150;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+.img-logo{
+    padding-top:5px; 
+    padding-bottom:0.2px; 
+    position:absolute;
+    width: 40;
+    height: 40;
+}
+.lable-text-color{
+    color: white;
+}
