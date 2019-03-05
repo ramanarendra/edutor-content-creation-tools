@@ -1,0 +1,1590 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>jQuery edittreetable Plugin Example</title>
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" crossorigin="anonymous">
+	<!-- <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" crossorigin="anonymous"> -->
+	<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+	
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!-- <script type="text/javascript" src="http://cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script> -->	
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<!------ Include the above in your HEAD tag ---------->
+	<!-- Latest compiled and minified JavaScript -->
+	<!-- <script type="text/javascript" src="script.js"></script> -->
+	
+ 
+<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script>
+var $container;
+var settings = { 
+	container:window,
+	data:[
+		{
+			id:presentId,
+			name:"root",
+			pid:0,
+			innercode: "",
+			pinnercode: "",
+			guid : "",
+			itemType :"",
+			metadata:"",
+			icon :"icon.jpg",
+			player:"",
+			params:"",
+			showInToc:true,
+			showInLivePage:false,
+			downloadId :"target_guid",
+			src	: "",
+			rootSrc : ""
+		}],
+	extfield:[],
+	nodeaddEnable:true,
+	maxlevel:14,
+	nodeaddCallback:function(data,callback){},
+	noderemoveCallback:function(data,callback){},
+	nodeupdateCallback:function(data,callback){},
+	customalert:function(msg){
+		alert(msg);
+	},
+	customconfirm:function(msg){
+		return confirm(msg);
+	},
+	text:{
+		NodeDeleteText:"Are You Sure To Delete This Node?"
+	}
+}
+var presentId = 1;
+var language ={};
+function init2(){
+		$window = window;
+		var element = $("#bs-treeetable");
+		
+		
+		var TREENODECACHE = "treenode";
+		
+		language.addchild = "New Child";//"Add A Child Node";
+		language.addasset = "Link Asset";
+		/*if(options) {           
+            $.extend(settings, options);
+        }*/
+        /* Cache container as jQuery as object. */
+        $container = (settings.container === undefined || settings.container === window) ? $window : $(settings.container);
+        /*render data*/
+        var dom_addFirstLevel = $("<div class='tt-operation m-b-sm'></div>").append($("<button class='btn btn-primary btn-sm j-resetData' ><i class='fa fa-level-down'></i>&nbsp;Reset Data</button>&nbsp;&nbsp;&nbsp;<button id='genearateJsonButton' class='btn btn-primary btn-sm j-genearateJson' ><i class='fa fa-level-down'></i>&nbsp;Generate TOC json</button>"));
+        var dom_table = $("<div class='tt-body'></div>");
+        var curElement = $(".tt-body");
+        var dom_header = $("<div class='tt-header'></div>");
+        /*renderHeader*/
+        renderHeader(dom_header);
+        
+        element.html('').append(dom_addFirstLevel).append(dom_header);
+        var treeData = {};
+        /*render firstlevel tree*/
+        /*
+            var curLevel = 1;
+            presentId = 1;
+            var row = {id:presentId,name:"",pid:0};
+            generateTreeNode(curElement,row,curLevel,true);
+        */
+      
+        
+
+        element.append(dom_table);
+        
+       var curElement = $(".tt-body");
+       var curLevel = 1;
+       presentId = 1;
+
+       var row = {
+       id:presentId,
+       name:"",
+       pid:0,
+       level:1,
+       innercode: "",
+       pinnercode: "",
+       guid : "",
+       type :"",
+       metadata:"",
+       icon :"icon.jpg",
+       player:"",
+       params:"",
+       showInToc:true,
+       showInLivePage:false,
+       downloadId :"target_guid",
+       src	: "",
+       rootSrc : ""};
+       if(nodeData.length>1){
+            row = nodeData[0];//settings.data[0];
+       }
+       //alert("create root node curLevel:"+curLevel)
+      generateTreeNode(curElement,row,curLevel,false,true);
+       //$("edit_node_info").addClass("setVisable");
+       //$(".j-addClass").css("display","none");
+       
+      // $("#genearateJsonButton").css("display","inline-block");
+      var i=1;
+	  //settings.data
+      if(nodeData.length>1)
+       var interval = window.setInterval(function(){
+           
+               
+            var row = nodeData[i];//settings.data[i];
+        
+            curLevel = row.level*1 ;//$(this).closest(".class-level")
+                //render first level row while row.pid equals 0 or null or undefined
+                //if(!row.pid){
+                    //curElement = $(this).closest(".class-level");
+                    curElement = $("#class-id-"+row.pid*1)
+    
+                    console.log(curElement+"line no:49, curElement name:"+row.name+"., curLevel:"+(curLevel));
+                
+                    presentId = row.id; 
+    
+                    generateTreeNode(curElement,row,curLevel*1,false,true);
+                    
+                    treeData[row.id] = row;
+            i++;
+            if(i>=nodeData.length){//settings.data
+                window.clearInterval(interval);
+               // break;
+               }
+       },1000);
+
+
+        /*delegate click event*/
+		element.delegate(".j-expend","click",function(event){
+			
+			if(event.target.classList[0]=="fa"){
+				var treenode = treeData[$(this).attr('data-id')];
+				toggleicon($(this));
+				
+				if($(this).parent().parent().attr('data-loaded')){
+					/*delegated hide/show childs elements */   
+				   console.log("delegated hide/show childs elements")
+					toggleExpendStatus($(this),treenode);        		
+				}
+				else{	    
+					/*delegated create child elements */    	
+					console.log("delegated create childs elements")
+					//loadNode($(this),treenode);
+				}
+			}        	        
+		});
+		/* genearate json output */
+		element.delegate(".j-genearateJson","click",function(){
+			//tocdata   tocdata
+		   // var final_json = []
+		   final_json = getChildsData("0");
+		  console.log("final_json:"+JSON.stringify(final_json))
+		  
+		  try{
+				//localStorage.removeItem('myStorage');
+				// Get the existing data
+				var existing = localStorage.getItem('tocJsonList');
+
+				// If no existing data, create an array
+				// Otherwise, convert the localStorage string to an array
+				existing = existing ? existing.split(',') : [];
+
+				// Add new data to localStorage Array .indexOf(value) > -1
+				console.log((final_json[0].guid+"_"+final_json[0].name)+"*****"+existing+"*****"+existing.indexOf(final_json[0].guid+"_"+final_json[0].name));
+				if(existing.indexOf(final_json[0].guid+"_"+final_json[0].name)>-1){
+					localStorage.setItem((final_json[0].guid+"_"+final_json[0].name), JSON.stringify(final_json[0]));                                
+				}
+				else{
+					existing.push(final_json[0].guid+"_"+final_json[0].name);
+					localStorage.removeItem('tocJsonList');
+					localStorage.setItem('tocJsonList', existing.toString());
+					localStorage.removeItem(final_json[0].guid+"_"+final_json[0].name);
+					localStorage.setItem((final_json[0].guid+"_"+final_json[0].name), JSON.stringify(final_json[0]));              
+				   // console.log(final_json[0].guid+"****************"+JSON.stringify(final_json[0]));
+				}
+				alert('Your message was Saved');
+				//console.log("localStorage:"+localStorage.getItem('myStorage'));
+		   }catch(er){
+			   console.log("er23:"+er)
+		   }
+			
+		});
+		 /* genearate json output */
+		 element.delegate(".j-publishJson","click",function(){
+			//tocdata   tocdata
+		   // var final_json = []
+		 try{
+
+		   }catch(er){
+			   console.log("er23:"+er)
+		   }
+			try{
+				
+				//var formdata = $('form#add_systemgoal').serialize();
+				$.ajaxSetup({async: false});  
+				$.ajax({     
+					type: "POST",
+					url: 'http://13.233.76.145/api/v1/create_toc_asset',
+					data: JSON.stringify(final_json),
+					success: function (data) {
+						console.log(data);   
+					},
+				})
+				  //window.requestFileSystem(window.TEMPORARY, 1024*1024, onInitFs, errorHandler);
+				// $.post("/bye", "data=Jermaine", function(response){
+				//     if (response.success) {
+				//         alert('Your message was sent');
+				//     } else {
+				//         alert(response.msg);
+				//     }
+				// });
+				// var xhr = new XMLHttpRequest();
+				// xhr.open("POST", "/bye", true);
+				// var blob = JSON.stringify(final_json[0]); // or e.g. recorder.getBlob()
+				// xhr.send("data="+blob);
+
+
+				// $.post('/bye').then(function(response) {
+				//     if (response.success) {
+				//         alert('Your message was sent');
+				//     } else {
+				//         alert(response.msg);
+				//     }
+				// }).catch(function(err) {
+				//     alert('Could not reach server');
+				// });
+			   /* var xhr;
+				if (window.XMLHttpRequest) {
+					// code for modern browsers
+					xhr = new XMLHttpRequest();
+				 } else {
+					// code for old IE browsers
+					xhr = new ActiveXObject("Microsoft.XMLHTTP");
+					xhr = new ActiveXObject("Scripting.FileSystemObject");
+				} 
+				var s = xhr.CreateTextFile(final_json[0].name+".txt", true);
+				s.WriteLine(JSON.stringify(final_json[0]));
+				s.Close();*/
+			   /* xhr.open("GET", "ajax_info.txt", true);
+				xhr.onreadystatechange = function()
+				{
+					if(xhr.readyState == 4 && xhr.status == 200)
+					{
+						console.log("xhr.responseText:"+xhr.responseText)
+						// we convert your JSON into JavaScript object
+						jsonArr = JSON.parse(final_json);
+
+						// we add new value:
+						jsonArr.push({"nissan": "sentra", "color": "green"});
+
+						// we send with new request the updated JSON file to the server:
+						xhr.open("POST", jsonRequestURL, true);
+						xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+						// if you want to handle the POST response write (in this case you do not need it):
+						// xhr.onreadystatechange = function(){  };
+						xhr.send("jsonTxt="+JSON.stringify(jsonArr));
+						// but on this place you have to have a server for write updated JSON to the file
+					}
+				};
+				xhr.send();*/
+			}catch(er){
+				console.log("json creation er:"+er);
+			}
+		});
+		element.delegate(".j-resetData","click",function(){
+			/* reset Data node*/
+			localStorage.removeItem('myStorage');
+			location.reload();
+			
+		});
+		/*delegate remove event*/
+		element.delegate(".j-trash","click",function(event){            
+			var parentDom = $(this).parents(".class-level-ul");
+			var isRemoveAble = false;
+			if(parentDom.attr("data-loaded")=="true"){
+				if(parentDom.parent().find(".class-level").length>0){
+					settings.customalert("Can not be deleted!");
+					return;
+				}
+				else{
+					isRemoveAble = true;
+				}
+			}
+			else{
+				if(parentDom.attr("data-id")){
+					var existChild = false;
+					for(var i=0;i<settings.data.length;i++){
+						if(settings.data[i].pid*1==parentDom.attr("data-id")*1){
+							existChild = true;
+							break;
+						}
+					}
+					if(existChild){
+						settings.customalert("Can not be deleted!");
+						return;
+					}
+					else{
+						isRemoveAble = true;
+						if(settings.text.NodeDeleteText){
+						   // settings.container.createImageBitmap();   
+						}
+					}
+				}
+				else{
+					isRemoveAble = true;
+				}
+			}
+			if(isRemoveAble){
+				var that = $(this);
+				
+				if(settings.customconfirm(settings.text.NodeDeleteText)){
+					/*trigger remove callback*/
+					var delete_id = that.parents(".class-level-ul").attr("data-id");
+					console.log(delete_id+"<----------delete_id*****befr deltee: "+JSON.stringify(tocdata))
+					delete tocdata[(delete_id)+""];
+					console.log("aftr deltee: "+JSON.stringify(tocdata))
+					settings.noderemoveCallback(that.parents(".class-level-ul").attr("data-id"),function(){
+						that.parents(".class-level-ul").parent().remove();
+					});
+				}
+			}
+		});
+		/*delegate addchild event*/
+		element.delegate(".j-addChild","click",function(){
+
+			//$(".container").css("width","100%");
+			//
+			try{
+
+			presentId = presentId+1;
+			alert("presentId:"+presentId);
+			document.getElementById("editNodeInfo").style.visibility="none";
+			$('#assetType').val('0');
+			$('#assetInfo').html("");
+			var curElement = $(this).closest(".class-level");
+			var requiredInput = curElement.find(".form-control*[required]");
+			var hasError = false;
+			requiredInput.each(function(){
+				if($(this).val()==""){
+				   // $(this).setAttribute("style","border: 1px solid red!important;");
+				   // alert("field '"+$(this).id+"' is empty");
+				   $(this).focus();
+				  // alert("$(this).parent():"+$(this).parent().html())
+					$(this).parent().addClass("has-error");//form-control
+					hasError = true;                    
+				}
+			});
+			if(!hasError){
+				var pid = curElement.find(".j-expend").attr("data-id");
+				var curLevel = $(this).parents(".class-level-ul").attr("data-level")-0+1; 
+				//presentId = curLevel;
+				var row = {
+					id:presentId,
+					name:"",
+					pid:pid,
+					level:curLevel,
+					innercode: "",
+					pinnercode: "",
+					guid : "",
+					type :"",
+					icon :"icon.jpg",
+					player:"",
+					params:"",
+					showInToc:true,
+					showInLivePage:false,
+					metadata:"",
+					downloadId :"target_guid",
+					src	: "",
+					rootSrc : ""};
+
+				generateTreeNode(curElement,row,curLevel,false,false);   
+			} 
+				
+			}catch(er){
+				console.log("er addchild:"+er)
+			}
+		});
+
+		element.delegate(".j-addAsset","click",function(){
+			//$(".container").css("width","65%");
+			document.getElementById("editNodeInfo").style.display="";
+			$(this).closest(".class-level");
+			var curElement = $(this).closest(".class-level");
+			var requiredInput = curElement.find(".form-control*[required]");
+			var hasError = false;
+			selectedId =  $(this).attr("data-id")*1;
+		   //alert("selectedId****:"+selectedId) 
+			//console.log(presentId)            	
+		});
+		element.delegate(".form-control","focus",function(){
+			$(this).parent().removeClass("has-error");//
+		});
+		/*delegate lose focus event*/
+		element.delegate(".form-control","blur",function(){
+			console.log(".form-control blur line 229")
+			var curElement = $(this);
+			var data = {};
+			data.id = curElement.parent().parent().parent().attr("data-id");
+			//alert($(this).attr("id")+"*****"+($(this).attr("id").match("itemType")))//str.match(/ain/g)
+			if($(this).attr("id").match("labelinput")){
+				
+				var parentUl = curElement.closest(".class-level-ul");
+				data.pid = parentUl.attr("data-pid");
+			// alert("data.pid:"+data.pid);
+				data.innercode = parentUl.attr("data-innercode");//parentUl.attr("data-level")-1
+				data.pinnercode = curElement.parents(".class-level-"+(data.pid*1+1)).children("ul").attr("data-innercode");
+				parentUl.find(".form-control").each(function(){
+					if($(this).attr("id").match("labelinput")){
+						data[$(this).attr("name")]=$(this).val(); 
+						console.log("input name:"+data[$(this).attr("name")]);   
+						//alert("presentId:"+data.id);
+						tocdata[data.id].name = data[$(this).attr("name")];    
+						$("#displaynameLabel_"+data.id).text(data[$(this).attr("name")]);
+						//$("#displaynameLabel_"+data.id).text("lastorg");
+
+					}
+				});
+				if(!data.id&&!curElement.attr("data-oldval")){
+					console.log("add node");
+					settings.nodeaddCallback(data,function(_data){
+						console.log("nodeaddCallback")
+						if(_data){
+							/*nedd to check bellow line*/
+							curElement.parent().attr("data-id",_data.id);
+							curElement.parent().parent().parent().attr("data-id",_data.id);
+							curElement.parent().parent().parent().attr("data-innercode",_data.innercode);
+							curElement.attr("data-oldval",curElement.val());
+						}
+					});                            
+				}
+				else if(curElement.attr("data-oldval")!=curElement.val()){
+					console.log("update node");   
+					settings.nodeupdateCallback(data,function(){
+						curElement.attr("data-oldval",curElement.val());
+					});
+				}
+		}
+		else if($(this).attr("id").match("itemType")){
+			var parentUl = curElement.closest(".class-level-ul");
+			parentUl.find(".form-control").each(function(){
+				if($(this).attr("id").match("itemType")){
+					tempid = $(this).attr("id").split("_")[1];
+				   // data[$(this).attr("name")]=$(this).val();    
+					//alert("presentId:"+data.id);
+					tocdata[tempid].itemType = $(this).val();    
+					$("#displayitemTypeLabel_"+tempid).text($(this).val());
+					//$("#displaynameLabel_"+data.id).text("lastorg");
+
+				}
+			});
+		}
+		else if($(this).attr("id").match("metadata")){
+			var parentUl = curElement.closest(".class-level-ul");
+			parentUl.find(".form-control").each(function(){
+				if($(this).attr("id").match("metadata")){
+					tempid = $(this).attr("id").split("_")[1];
+				   // data[$(this).attr("name")]=$(this).val();    
+					//alert("presentId:"+data.id);
+					tocdata[tempid].metadata = $(this).val();    
+
+				}
+			});
+		}
+			
+			
+			//$("edit_node_info").addClass("setHide");
+		});
+}
+
+function renderHeader(_dom_header){
+	var dom_row = $('<div></div>');
+	dom_row.append($("<span class='maintitle'></span>").text(settings.maintitle));
+	dom_row.append($("<span></span>"));        	
+	//render extfield
+	for(var j=0;j<settings.extfield.length;j++){
+		var column = settings.extfield[j];    			
+		$("<span></span>").css("min-width","166px").text(column.title).appendTo(dom_row);
+	}
+	dom_row.append($("<span class='textalign-center'>Operation</span>"));
+	_dom_header.append(dom_row);
+}
+
+function generateColumn(row,extfield){
+	var generatedCol;
+	switch(extfield.type){
+		case "input":generatedCol=$("<input type='text' class='form-control input-sm'/>").val(row[extfield.key]).attr("data-oldval",row[extfield.key]).attr("name",extfield.key);break;
+		default:generatedCol=$("<span></span>").text(row[extfield.key]);break;
+	}
+	return generatedCol;
+}
+function toggleicon(toggleElement){
+	var _element = toggleElement.find(".fa");
+	if(_element.hasClass("fa-caret-right")){
+		_element.removeClass("fa-caret-right").addClass("fa-caret-down");
+		toggleElement.parent().addClass("selected");
+	}else{
+		_element.removeClass("fa-caret-down").addClass("fa-caret-right");
+		toggleElement.parent().removeClass("selected");
+	}
+}
+function toggleExpendStatus(curElement){
+	if(curElement.find(".fa-caret-down").length>0){
+		 curElement.parent().parent().parent().find(".class-level").removeClass("rowhidden");
+	}
+	else{
+		curElement.parent().parent().parent().find(".class-level").addClass("rowhidden");
+	}           
+}
+function collapseNode(){
+}
+
+function expendNode(){
+}
+function onInitFs(fs) {
+
+	fs.root.getFile('log.txt', {create: true}, function(fileEntry) {
+
+// Create a FileWriter object for our FileEntry (log.txt).
+fileEntry.createWriter(function(fileWriter) {
+
+fileWriter.onwriteend = function(e) {
+console.log('Write completed.');
+};
+
+fileWriter.onerror = function(e) {
+console.log('Write failed: ' + e.toString());
+};
+
+// Create a new Blob and write it to log.txt.
+var blob = new Blob([JSON.stringify(final_json)], {type: 'text/plain'});
+
+fileWriter.write(blob);
+
+}, errorHandler);
+
+}, errorHandler);
+  
+}
+function errorHandler(e) {
+	var msg = '';
+  
+	switch (e.code) {
+	  case FileError.QUOTA_EXCEEDED_ERR:
+		msg = 'QUOTA_EXCEEDED_ERR';
+		break;
+	  case FileError.NOT_FOUND_ERR:
+		msg = 'NOT_FOUND_ERR';
+		break;
+	  case FileError.SECURITY_ERR:
+		msg = 'SECURITY_ERR';
+		break;
+	  case FileError.INVALID_MODIFICATION_ERR:
+		msg = 'INVALID_MODIFICATION_ERR';
+		break;
+	  case FileError.INVALID_STATE_ERR:
+		msg = 'INVALID_STATE_ERR';
+		break;
+	  default:
+		msg = 'Unknown Error';
+		break;
+	};
+  
+	console.log('Error: ' + msg);
+}
+
+function generateTreeNode(curElement,row,curLevel,isPrepend,isOnload){
+	try{
+		console.log("row.id:"+row.id+"*****"+presentId);
+		console.log("curElement:"+curElement+"*******curLevel:"+curLevel)
+		var dom_row = $('<div id="class-id-'+row.id+'" class="class-level class-level-'+(row.level)+'"></div>');
+		var dom_ul = "";
+		if(isOnload)
+			dom_ul =$('<ul class="class-level-ul selected"></ul>');
+		else
+			dom_ul =$('<ul class="class-level-ul"></ul>');
+		dom_ul.attr("data-pid",row.pid*1).attr("data-level",curLevel).attr("data-id",row.id);
+		var dom_li =$('<li></li>');
+		row.innercode&&dom_ul.attr("data-innercode",row.innercode);
+		var nameData = row['name'];
+		var itemType = row['type'];
+		var metaData = row['metadata'];
+		// alert(typeof nameData)
+		// if(typeof nameData == "object")
+		//     nameData = nameData[nameData.length-1];
+		console.log("presentId:"+presentId+"******row.id:"+row.id)
+		// if(curLevel>=settings.maxlevel){//<i class='fa fa-remove j-remove'></i>           
+		// 	$('<label class="j-expend"></label>').append('<label class="fa p-xs"></label>').append($("<input type='text' class='form-control input-sm' required/>").attr("data-oldval",nameData).val(nameData).attr('id','labelinput_'+row.id).attr("name","name")).attr('data-id',row.id).appendTo(dom_ul);
+		// 	dom_ul.attr("data-loaded",true);
+		//    // alert(presentId+"----presentId****isOnload*******:"+row.id);     
+		// }
+		if(isOnload){
+			$('<label class="j-expend"></label>').append('<label class="fa fa-caret-down p-xs"></label>').attr('data-id',row.id).appendTo(dom_li);
+			dom_ul.attr("data-loaded",true);
+		}
+		else
+			$('<label class="j-expend"></label>').append('<label class="fa fa-caret-right p-xs"></label>').attr('data-id',row.id).appendTo(dom_li);
+		if(curLevel>1){
+			if(isOnload){
+				if(row.type=="pdf")
+					$('<label ></label>').append('<label class="fa fa-file-pdf-o p-xs"></label>').append($("<input type='text' class='form-control input-sm' required/>").attr("data-oldval",nameData).val(nameData).attr('id','labelinput_'+row.id).attr("name","name")).appendTo(dom_li);
+				else if(row.type=="mp4")
+					$('<label ></label>').append('<label class="fa fa-file-video-o p-xs"></label>').append($("<input type='text' class='form-control input-sm' required/>").attr("data-oldval",nameData).val(nameData).attr('id','labelinput_'+row.id).attr("name","name")).appendTo(dom_li);
+				else if(row.type=="html5")
+					$('<label ></lable>').append('<label class="fa fa-file p-xs"></label>').append($("<input type='text' class='form-control input-sm' required/>").attr("data-oldval",nameData).val(nameData).attr('id','labelinput_'+row.id).attr("name","name")).appendTo(dom_li);
+				else if(row.type=="assessment")
+					$('<label ></label>').append('<label class="fa fa fa-puzzle-piece p-xs"></label>').append($("<input type='text' class='form-control input-sm' required/>").attr("data-oldval",nameData).val(nameData).attr('id','labelinput_'+row.id).attr("name","name")).appendTo(dom_li);
+				else
+					$('<label ></label>').append('<label class="fa fa-book p-xs"></label>').append($("<input type='text' class='form-control input-sm' required/>").attr("data-oldval",nameData).val(nameData).attr('id','labelinput_'+row.id).attr("name","name")).appendTo(dom_li);
+			}
+			else
+				$('<label ></label>').append('<label id="labelIcons_'+row.id+'" class="fa fa-book p-xs" style="visibility:visible"></label>').append($("<input type='text' class='form-control input-sm' required/>").attr("data-oldval",nameData).val(nameData).attr('id','labelinput_'+row.id).attr("name","name")).appendTo(dom_li);
+			/* need to check here*/
+			$("<label></lable>").append('<i class="fa fa-trash j-trash"></i>').appendTo(dom_li);
+		}
+		else
+			$('<label ></label>').append($("<input type='text' class='form-control input-sm' required/>").attr("data-oldval",nameData).val(nameData).attr('id','labelinput_'+row.id).attr("name","name")).appendTo(dom_li);
+		   
+		if(settings.nodeaddEnable){
+			if(curLevel==1){
+				$("<label></label>").append($('<button class="btn btn-outline btn-sm j-addChild "><i class="fa fa-plus"></i>'+language.addchild +'</button>').attr("data-id",row.id)).appendTo(dom_li);    
+			}
+			// else if(curLevel-0>=settings.maxlevel){
+			// 	$("<label></label>").attr("data-id",row.id).appendTo(dom_li);
+			// } 
+			else{
+				//required
+				$("<label></label>").append($('<button class="btn btn-outline btn-sm j-addChild "><i class="fa fa-plus"></i>'+language.addchild +'</button><button id="addasset_'+row.id+'" class="btn btn-outline btn-sm j-addAsset"><i class="fa fa-plus"></i>'+language.addasset +'</button>').attr("data-id",row.id)).appendTo(dom_li);   
+				
+				$('<label ></label>').append($("<input type='text' class='form-control input-sm' style='width:5em' required/>").val(itemType).attr("placeholder","Item Type").attr('id','itemType_'+row.id)).appendTo(dom_li);
+				$('<label ></label>').append($("<input type='text' class='form-control input-sm' style='width:5em' />").attr("placeholder","Meta data").val(metaData).attr('id','metadata_'+row.id)).appendTo(dom_li);
+				//$('<label ></label>').append($("<input type='text' class='form-control input-sm' required/>")).appendTo(dom_li); 
+			}
+		}       
+		for(var j=0;j<settings.extfield.length;j++){
+				var colrender = settings.extfield[j];
+				var coltemplate = generateColumn(row,colrender);
+				$('<label></label>').attr("data-id",row.id).html(coltemplate).appendTo(dom_li);
+		}
+		var infoNode =$('<div ></div>');
+		$('<label class="fa fa-level-down p-xs" style="margin-left:40px"></label><br>').html('<br>"guid": "<label id=\'guidLabel_'+row.id+'\'>'+row['guid']+'</label>", <br>"displayname": "<label id=\'displaynameLabel_'+row.id+'\'>'+nameData+'</label>", <br>"Item Type": "<label id=\'displayitemTypeLabel_'+row.id+'\'>'+itemType+'</label>"<div style="display:none;" id=\'assetInfoLabel_'+row.id+'\'>", <br>"type": "<label id=\'typeLabel_'+row.id+'\'>'+row['type']+'</label>", <br>"icon": "<label id=\'iconLabel_'+row.id+'\'>'+row['icon']+'</label>", <br>"Player": "<label id=\'playerLabel_'+row.id+'\'>'+row['player']+'</label>", <br>"params": "<label id=\'paramsLabel_'+row.id+'\'>'+JSON.stringify(row['params'])+'</label>", <br>"showInToc": "<label id=\'showintocLabel_'+row.id+'\'>'+row['showInToc']+'</label>", <br>"showInLivePage": "<label id=\'showinlivepageLabel_'+row.id+'\'>'+row['showInLivePage']+'</label>", <br>"downloadId": "<label id=\'downloadidLabel_'+row.id+'\'>'+row['downloadId']+'</label>"</div>').appendTo(infoNode);
+		//dom_ul.append($("<li><i class='fa fa-remove j-remove'></i></li>"));
+		dom_ul.append(dom_li);
+		dom_row.append(dom_ul);
+		dom_row.append(infoNode);
+		
+		if(isPrepend){
+			curElement.prepend(dom_row);
+		}
+		else{
+			curElement.append(dom_row);
+		}
+		if(row.type=="mp4" || row.type=="pdf" || row.type=="assessment" || row.type=="html5"){
+			$("#assetInfoLabel_"+row.id).css("display","inline");
+		}
+		var temp_data = {};
+		temp_data.id = row.id+"";
+		temp_data.pid = row.pid*1;
+		temp_data.level = row.level*1;
+		temp_data.innercode = row.innercode;
+		
+		var parentUl = curElement.closest(".class-level-ul");
+		//alert("row.pid:"+row.pid)
+		var tempN = "";
+		try{
+			tempN = curLevel;//".class-level-"+( row.pid*1+1);//curElement.parents(".class-level-"+( row.pid+1)).children("ul").attr("data-innercode");
+		}catch(er){
+			console.log("er 395:"+er)
+		}
+		console.log("tempN:"+tempN);
+ 
+		// if(row.pinnercode!=""){
+		//     console.log("row.pinnercode not null******"+row.pinnercode);
+		//     tempN = row.pinnercode;
+		// }
+		temp_data.pinnercode = tempN;
+		if (row.guid &&  row.guid!="" && row.guid.length>1)
+			temp_data.guid = row.guid;
+		else
+			temp_data.guid = getGUID();
+		$("#guidLabel_"+row.id).text(temp_data.guid);
+		temp_data.name = nameData; 
+		temp_data.itemType =  (row.type) ? row.type: "";
+		temp_data.metadata =  (row.metadata) ? row.metadata: "{}";
+		temp_data.icon =  (row.icon) ? row.icon: "";
+		temp_data.player =  (row.player) ? row.player: "";
+		temp_data.params =  (row.params) ? row.params: "";
+		temp_data.showInToc =  (row.showInToc) ? row.showInToc: "";
+		temp_data.showInLivePage =  (row.showInLivePage) ? row.showInLivePage: "";
+		temp_data.downloadId =  (row.downloadId) ? row.downloadId: "";
+		temp_data.src =  (row.src) ? row.src: "";
+		temp_data.rootSrc =  (row.rootSrc) ? row.rootSrc: "";
+		//presentId = curLevel;
+		tocdata[row.id]=temp_data; 
+		if(!isOnload){
+			$("#labelinput_"+presentId).select();
+			document.getElementById("labelinput_"+presentId).scrollIntoView();
+			//
+			$("#labelinput_"+presentId).scrollTop();
+		}
+		console.log(temp_data.itemType+"<---temp_data.itemType ****row.id:"+row.id+"*******;tocdata:"+JSON.stringify(tocdata[row.id]) )
+	}catch(er){
+		console.log("ergenerateTreeNode:"+er)
+	}
+}
+
+function getChildsData(key){
+   // for(key in tocdata){
+		let _index = key*1;
+		let temp_childs=[]
+		for(let i=_index+1; i<= presentId;i++){
+			if((i+'') in tocdata){
+
+			let tmp_val = tocdata[i+''].pid*1; //Need to verify this conditon whne we delete the node
+			
+			if(tmp_val==_index){
+				let temp_data = {};
+				
+			   temp_data.innercode = tocdata[i+''].id;
+			   temp_data.pinnercode = tocdata[i+''].id;
+			   //curElement.parents(".class-level-"+(parentUl.attr("data-level")-1)).children("ul").attr("data-innercode");
+				temp_data.guid =tocdata[i+''].guid;
+				temp_data.name = tocdata[i+''].name; 
+				temp_data.label = tocdata[i+''].name; 
+				temp_data.itemType = tocdata[i+''].itemType;
+				temp_data.metadata = tocdata[i+''].metadata;
+				temp_data.id = tocdata[i+''].id;
+				temp_data.pid = tocdata[i+''].pid*1;
+				temp_data.level = tocdata[i+''].level*1;
+				temp_data.icon = tocdata[i+''].icon;
+				temp_data.player= tocdata[i+''].player;
+				temp_data.params= tocdata[i+''].params;
+				temp_data.showInToc= tocdata[i+''].showInToc;
+				temp_data.showInLivePage= tocdata[i+''].showInLivePage;
+				temp_data.downloadId = tocdata[i+''].downloadId;
+				temp_data.src	=  tocdata[i+''].src;
+				temp_data.rootSrc = tocdata[i+''].rootSrc;
+				console.log("temp_data of node index:"+key+" is:"+JSON.stringify(temp_data))
+				json = getChildsData(i+'');
+				temp_data.childs = json;
+				temp_childs.push(temp_data)
+			}
+			
+		 }
+		}               
+		
+		return temp_childs;
+		//final_json.push(temp_data)
+	//}
+}
+</script>
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+
+	<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" type="text/css" media="screen" title="no title" charset="utf-8"/>
+	
+	<style>
+    body { background-color:#fafafa; font-family:'Open Sans', Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+body {
+  background: #C5E1A5;
+}
+.form {
+  padding: 10px;
+  background: #efefef;
+  /*padding: 60px 120px 80px 120px;*/
+  /* text-align: center; */
+  -webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+  box-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+}
+label {
+  display: inline-block;
+  margin-left:0em;
+  margin-right: 0.4em;
+  position: relative;
+  /* margin: 2px 0px; */
+}
+.inputlabel {
+  display: block!important;
+  position: relative;
+  /* margin: 8px 10px; */
+}
+input {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  /* border: 0px !important; */
+  outline: none;
+  padding-left:0px !important;
+  margin-left: 0px !important;
+}
+
+.line-box {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: #BCBCBC;
+}
+
+.line {
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #8BC34A;
+  transition: ease .6s;
+}
+
+input:focus + .line-box .line {
+  width: 100%;
+}
+
+.label-txt {
+  position: absolute;
+  top: -0.8em;
+  /* padding: 6px; */
+  padding-bottom: 0px;
+  font-family: sans-serif;
+  font-size: 1em;
+  letter-spacing: 1px;
+  color: rgb(120,120,120);
+  transition: ease .3s;
+}
+
+.label-active {
+  top: -0.8em;
+}
+
+button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: rgb(220,220,220);
+  font-weight: bold;
+  color: rgb(120,120,120);
+  border: none;
+  outline: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: ease .3s;
+}
+
+button:hover {
+  background: #8BC34A;
+  color: #105dc2;
+}
+.fa-caret-down{
+	font-size:2em;
+}
+.fa-caret-right{
+	font-size:2em;
+}
+		.treetable{
+
+		}
+		.treetable .fa{
+			cursor: pointer;
+			padding-right: 5px;
+		}
+		.treetable .rowhidden{
+			display: none;
+		}
+		.treetable .j-addChild{
+			display: none1;
+		}
+		.treetable .selected .j-addChild{
+			display: inline;
+		}
+		.treetable .btn-outline{
+			background-color: transparent;
+		}
+		.treetable .form-control{
+			width: auto;
+			display: inline-block;
+			font-size: 1.5rem;
+		}
+		.treetable .textalign-center{
+			text-align: center;
+		}
+		.treetable .j-expend{
+			cursor: pointer;
+			/*width: 35% !important;*/
+			text-align: left !important;
+		}
+		.treetable .maintitle{
+			width: 35% !important;
+		}
+		.treetable .j-remove{
+			padding: 8px;
+			cursor: pointer;
+			font-size: 16px;
+			color:red;
+		}
+		.treetable .tt-header{
+			margin-top:10px;
+		}
+		/* .treetable .class-level-2 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 20px;
+		}
+		.treetable .class-level-3 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 44px;
+		}
+		.treetable .class-level-4 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 76px;
+		}
+		.treetable .class-level-5 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 108px;
+		}
+		.treetable .class-level-6 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 140px;
+		}
+		.treetable .class-level-7 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 172px;
+		}
+		.treetable .class-level-8 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 204px;
+		}
+		.treetable .class-level-9 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 236px;
+		}
+		.treetable .class-level-10 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 268px;
+		}
+		.treetable .class-level-11 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 300px;
+		}
+		.treetable .class-level-12 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 332px;
+		}
+		.treetable .class-level-13 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 374px;
+		}
+		.treetable .class-level-14 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 406px;
+		} */
+		.class-level-1{
+			position: relative;
+			margin-left: 20px;
+		}
+		.class-level-2{
+			position: relative;
+			margin-left: 35px;
+		}
+		.class-level-3{
+			position: relative;
+			margin-left: 50px;
+		}
+		.class-level-4{
+			position: relative;
+			margin-left: 65px;
+		}
+		.class-level-5{
+			position: relative;
+			margin-left: 80px;
+		}
+		.class-level-6{
+			position: relative;
+			margin-left: 95px;
+		}
+		.class-level-7{
+			position: relative;
+			margin-left: 110px;
+		}
+		.class-level-8{
+			position: relative;
+			margin-left: 125px;
+		}
+		.class-level-9{
+			position: relative;
+			margin-left: 140px;
+		}
+		.class-level-10{
+			position: relative;
+			margin-left: 155px;
+		}
+		.class-level-11{
+			position: relative;
+			margin-left: 170px;
+		}
+		.class-level-12{
+			position: relative;
+			margin-left: 185px;
+		}
+		.class-level-13{
+			position: relative;
+			margin-left: 200px;
+		}
+		.class-level-14{
+			position: relative;
+			margin-left: 215px;
+		} 
+		.treetable .class-level-1 {
+			border-bottom: dashed 1px #eee;
+		}
+		.treetable .class-level-ul{
+			padding: 0;
+			margin-bottom: 2px;
+		}
+		.treetable .class-level-ul li {
+			float: left;
+			text-align: center;
+			vertical-align: middle;
+			padding: 1px 10px;
+			/*min-width: 120px;*/
+			list-style: none;
+		}
+		.treetable .class-level-ul:after {
+			display: block;
+			clear: both;
+			height: 0;
+			content: "\0020";
+		}
+		.treetable .tt-header div span {
+			width: auto;
+			line-height: 29px;
+			display: inline-block;
+			min-width: 120px;
+			text-align: center;
+		}
+		.treetable .tt-body{
+			border: solid 1px #DDD;
+			padding-top: 1px;
+			background-color:#FFF;
+		}
+		.treetable .tt-header div{
+			border: solid 1px #DDD;
+			border-bottom:none;
+			background-color:#FFF;
+		}
+		.showcss{ display:block;}
+  .hidecss{ display:none;}
+	</style>
+</head>
+<body onload="loadJsonData()">
+<div id="dialog" title="Alert message" style="display: none">
+            <div class="ui-dialog-content ui-widget-content">
+                <p>
+                    <label id="lblMessage">
+					</label>
+					<textarea id="jsonEditView" style="display:none" maxlength="50000" cols="75" rows="16"></textarea>
+                </p>
+            </div>
+        </div>
+<div id="tocCreationInfo" >
+	<div class="container" style="position:relative;margin: 0px!important;max-width: 99%">			
+		<div id="bs-treeetable" class="treetable" style="margin: 0px; padding: 0px; vertical-align: top;">
+			Loading ...
+		</div>	
+	</div>
+	<div id="editNodeInfo" style="display:none;position:fixed;width:100%!important;background:grey;height:100%!important;overflow:scroll;margin: 0px; padding: 0px;top:0px;left:0px">
+		<div class="form" style="position:fixed;width:60%;margin-left:20%;margin-top:5%">
+			<div class="form-group">
+				<label for="TOCFormControlSelect1">Select asset type:</label>
+				<select class="form-control" id="assetType" onchange="populateAssets(this)">
+				</select>
+			  </div>
+			  <div class="form-group">
+				<label for="TOCFormControlSelect2">Select asset:</label>
+				<select class="form-control" id="assetInfo" onchange="assetVerify(this)">
+				</select>
+			  </div>						
+			  <!-- <div class="form-group">
+				  <label for="TOCFormControlInput1">Icon</label>
+				  <input type="text" class="input" placeholder="https://portal.com/icon.jpg">
+			  </div>					 -->
+			  <div id="startPageGroup" class="form-group" style="display:none">
+				  <label for="TOCFormControlInput1">Start Page:</label>
+				  <input style="display:inline; width: 4em !important;" id="start_page" min="1" max="10" type="number" class="input" placeholder="start page number" value="1">
+				  <label for="TOCFormControlInput1">End Page:</label><input id="end_page" min="1" max="10" style="display:inline; width: 4em !important;" type="number" class="input" placeholder="end page number" value="5">
+			  </div>
+			  
+			  <!-- <div id="endPageGroup" class="form-group" style="display:none">
+				<label for="TOCFormControlInput1">End Page:</label>
+				<input id="end_page" type="number" class="input" placeholder="">
+			</div> -->
+			  <!-- <div class="form-group">
+				<label for="TOCFormControlTextarea1">Select Player</label>
+				<input type="text" class="input" placeholder="Select Player">
+			  </div> -->
+			  <div class="form-group">
+				<label for="TOCFormControlTextarea1">Show In TOC:</label>
+				<div class="btn-group btn-group-toggle" data-toggle="buttons">
+					  <label class="btn btn-outline-primary">
+						  <input type="radio" name="showintoc" value="true"  autocomplete="off" > True
+					  </label>
+					  <label class="btn btn-outline-primary">
+						  <input type="radio" name="showintoc"  value="false" autocomplete="off"> False
+					  </label>
+				  </div>
+			  </div>
+			  <div class="form-group">
+				<label for="TOCFormControlTextarea1">Show In Livepage:</label>
+				<div  class="btn-group btn-group-toggle" data-toggle="buttons">
+					  <label class="btn btn-outline-primary">
+						  <input type="radio" name="showinlivepage"  value="true" autocomplete="off" > True
+					  </label>
+					  <label class="btn btn-outline-primary">
+						  <input type="radio" name="showinlivepage"  value="false" autocomplete="off"> False
+					  </label>
+				  </div>
+			  </div>					
+				
+		<!-- <div class="line-box">
+				<div class="line"></div>
+				</div> -->
+			<button type="submit"  onclick="linkAsset()" >submit</button>
+			</div>
+			
+</div>
+	</div>
+	
+	<script type="text/javascript">
+	var assetsJsonData;
+	var jsonFinaldata = {};
+	var final_json = [];
+	var presentId = 0;
+	var selectedId = 0;
+	
+
+	var dom_obj = "";
+	var nodeData = [];
+	//localStorage.removeItem('tocJsonList')
+	function selectJsonFromStorage(){
+
+	}
+	var existing = localStorage.getItem('tocJsonList');
+
+	// If no existing data, create an array
+	// Otherwise, convert the localStorage string to an array
+	existing = existing ? existing.split(',') : [];
+	
+		var settings2 = {
+			container:window,
+			customalert:function(msg){
+				alert(msg);
+			},
+			customconfirm:function(msg){
+				return confirm(msg);
+			},
+			text:{
+				NodeDeleteText:"Do you want to load previous data?"
+			}
+		};
+		
+
+		function ShowCustomDialog(htmlContext)
+		{
+			ShowDialogBox('Stored TOC List ',htmlContext,'Ok','', 'GoToAssetList',null);
+		}
+
+		function ShowDialogBox(title, content, btn1text, btn2text, functionText, parameterList) {
+			var btn1css;
+			var btn2css;
+
+			if (btn1text == '') {
+				btn1css = "hidecss";
+			} else {
+				btn1css = "showcss";
+			}
+
+			if (btn2text == '') {
+				btn2css = "hidecss";
+			} else {
+				btn2css = "showcss";
+			}
+			$("#lblMessage").html(content);
+			function CloseFunction(){
+				//alert('close funciton');
+				//loadDomNode();
+			}
+			$("#dialog").dialog({
+				resizable: false,
+				title: title,
+				modal: true,
+				width: '60%',
+				height: 'auto',
+				position: ['center',20] ,
+				bgiframe: false,
+				hide: { effect: 'scale', duration: 400 },
+				close: CloseFunction,
+				dialogClass: 'surveyDialog',
+				open: function(event, ui) {
+					$(this).parent().css({'margin-left': "20%"});
+				},
+				buttons: [
+								{
+									text: btn1text,
+									"class": btn1css,
+									click: function () {	
+
+										var textareaObj = document.getElementById('jsonEditView');	
+										if(textareaObj.style.display=="none"){						
+										var value = ($("input[type='radio'][name='gender']:checked").val());
+										loadDomNode(value);
+										$("#dialog").dialog('close');
+										}
+										else if(textareaObj.style.display==""){
+											value = textareaObj.name;
+											console.log("value:"+value+" , textareaObj.value"+ textareaObj.value);
+											localStorage.removeItem(value)
+											localStorage.setItem(value, textareaObj.value); 
+											//$("#dialog").dialog('close');
+											$('#jsonEditView').css("display","none");
+										$('#lblMessage').css("display","");
+
+
+										}
+									}
+								},
+								{
+									text: btn2text,
+									"class": btn2css,
+									click: function () {
+										alert('cliseo')
+										loadDomNode();
+										$("#dialog").dialog('close');
+									}
+								}
+							]
+			});
+	}
+
+	function init(){
+		if(localStorage.getItem(existing[0]) && settings2.customconfirm(settings2.text.NodeDeleteText) ){
+			//$(document).ready(function(){
+				cData ="";
+				for(var i=0;i<existing.length;i++){
+					cData += '<p><span class="ui-icon ui-icon-arrowthick-1-e" style=" margin-right: 20px;display:inline-block; "></span><span style="display:inline; margin-right: 2em ">'+existing[i].split('_')[1]+'</span><input style="display:inline;width:auto;margin-right:2em;" name="gender" type="radio" value="'+existing[i]+'"/><button  onclick="showJson(this)" value="'+existing[i]+'">Edit</button></p>';
+				}
+				//cData += '</form>'
+				ShowCustomDialog(cData);
+			//});
+		}
+		else{
+			loadDomNode();
+		}
+	}
+	var modifiedJsonVal;
+	function showJson(org){
+		modifiedJsonVal = org.value;
+		console.log(localStorage.getItem(org.value+""))
+		console.log("org.value")
+		console.log(org.value)
+		var div = document.getElementById("jsonEditView");
+		div.value = "";
+		// var input = document.createElement("textarea");
+		// var button = document.createElement("button");
+		// button.value = "submit";
+		// button.innerText = "submit";
+		// input.value = localStorage.getItem(org.value+"");
+		// input.name = "post";
+		// input.maxLength = "5000";
+		// input.cols = "80";
+		// input.rows = "40";
+		// //div.innerHTML="";
+		// div.appendChild(input); //appendChild
+		//div.appendChild(button);
+		$('#jsonEditView').css("display","");
+		$('#lblMessage').css("display","none");
+		$('#jsonEditView').attr("name",modifiedJsonVal+"");
+		//$('#jsonEditView').html(localStorage.getItem(org.value+""));
+		div.value = localStorage.getItem(org.value+"").replace(",",",   ");
+	}
+	function createChilsData(_data){
+		var tempNode = { id:_data.id,name:_data.name,pid:_data.pid*1,level:_data.level*1,pinnercode:_data.id,innercode:_data.innercode,guid:_data.guid,type: _data.itemType,metadata: _data.metadata,icon: _data.icon,player: _data.player,params: _data.params,showInToc: _data.showInToc,
+		showInLivePage: _data.showInLivePage,downloadId: _data.downloadId,src: _data.src,rootSrc: _data.rootSrc};
+		nodeData.push(tempNode);
+		//console.log("tempNode:"+JSON.stringify(tempNode));
+		if(_data.childs && _data.childs.length>0){
+			for(var k=0;k<_data.childs.length;k++){
+				createChilsData(_data.childs[k]);
+			}
+		}			
+	}
+	function loadDomNode(_val){
+		if(_val)
+			dom_obj = localStorage.getItem(_val+"");
+		var json_data ={};
+		console.log("dom_obj:"+dom_obj);
+		if(dom_obj && dom_obj!=undefined && dom_obj.length>1)
+			json_data = JSON.parse(dom_obj);
+		var rootIndex = 0;
+		if(json_data && json_data!=null)
+			createChilsData(json_data);
+		console.log("_data:"+JSON.stringify(nodeData))
+		
+		
+		tocdata = {};
+		index = 0;
+		$('input').focus(function(){
+			$(this).parent().find(".label-txt").addClass('label-active');
+		});
+
+		$("input").focusout(function(){
+			if ($(this).val() == '') {
+			$(this).parent().find(".label-txt").removeClass('label-active');
+			};
+		});
+		init2();
+	}	
+	
+	function loadJsonData(){
+		console.log("loadJsonData called;")
+		document.getElementById("editNodeInfo").style.display="none";
+		$.ajax({//http://ec2-13-250-46-76.ap-southeast-1.compute.amazonaws.com/content_assets.json
+				type: 'GET',
+				url: "http://13.233.76.145/content_assets.json",
+				processData: true,
+				data: {},
+				dataType: "json",
+				success: function (data) {
+					console.log("data:"+data);
+					populateAssetType(data);
+				}
+		});
+		
+		var curElement = $(".tt-body");
+	var curLevel = 1;
+   // presentId = 1;
+	var row = {
+	   id:presentId,
+	   name:"",
+	   pid:0,
+	   level:1,
+	   innercode: "",
+	   pinnercode: "",
+	   guid : "",
+	   type :"",
+	   metadata :"{}",
+	   icon :"icon.jpg",
+	   player:"",
+	   params:"",
+	   showInToc:true,
+	   showInLivePage:false,
+	   downloadId :"target_guid",
+	   src	: "",
+	   rootSrc : ""};
+	//generateTreeNode(curElement,row,curLevel,true);
+	//$("edit_node_info").addClass("setVisable");
+		// $.getJSON('http://ec2-13-250-46-76.ap-southeast-1.compute.amazonaws.com/content_assets.json', function(data) {
+		// myItems = data.items;
+		// console.log(myItems);
+		// });
+		init();
+		
+	}
+	function populateAssetType(data){ 
+		temp={};
+		$('#assetType').append('<option value="0" >slect</option>')
+		for(node in data){
+			var type = data[node].asset_type
+			//console.log(node+"****:"+data[node].asset_type+"=="+type);
+			if(!temp[type]){
+				temp[type] = 1;
+				$('#assetType').append('<option value="'+type+'">'+type+'</option>')
+			}
+		}
+	}
+	function assetVerify(_org){
+		//_type = $('#assetType').val();
+		var e = document.getElementById("assetInfo");
+		_guid = e.options[e.selectedIndex].value;
+		_text = e.options[e.selectedIndex].text;
+		_icon = e.options[e.selectedIndex].getAttribute('data-icon');
+		_player = e.options[e.selectedIndex].getAttribute('data-player');
+		//_player = e.options[e.selectedIndex].data('player');
+		_range = e.options[e.selectedIndex].getAttribute('data-range');
+		
+			if(_player=="pdf"){
+				try{
+
+				
+				//start_page
+				//$('#start_page').value = 1;
+				//$('#start_page').min = 1;
+				$('#start_page').attr('value',1);
+				$('#start_page').attr('min',1);
+				$('#start_page').attr('max',_range);
+
+				// $('#end_page').value = _range;
+				// $('#end_page').min = 1;
+				// $('#end_page').max = _range;
+				
+				$('#end_page').attr('value',1);
+				$('#end_page').attr('min',1);
+				$('#end_page').attr('max',_range);
+				console.log("range:************"+_range)
+				}catch(er){
+					console.log(er)
+				}
+			}else{
+				document.getElementById('paramsLabel_2').style.display="none";
+			}
+	}
+	function populateAssets(_org){
+		temp={};
+		$('#assetInfo').html("");
+		_type = $(_org).val();
+		//console.log("_type:"+_type)
+		if(_type=="pdf"){
+			$('#startPageGroup').css("display","");
+			$('#endPageGroup').css("display","");
+
+		}
+		else{			
+			$('#startPageGroup').css("display","none");
+			$('#endPageGroup').css("display","none");
+		}
+		$('#assetInfo').append('<option value="0" >slect</option>')
+		for(node in assetsJsonData){
+			var name = assetsJsonData[node].name;
+			var player = assetsJsonData[node].player;
+			//console.log("assetsJsonData[node].icon_url:***"+assetsJsonData[node].icon_url);
+			var icon = assetsJsonData[node].icon_url;
+			var range=0;
+			if(player=="pdf"){
+				try{
+				
+				range = assetsJsonData[node].page_count;
+				//start_page
+				console.log("range:"+range)
+				}catch(er){
+					console.log(er)
+				}
+			}
+			//console.log(node+"****:"+assetsJsonData[node].asset_type+"=="+_type);
+			if(assetsJsonData[node].asset_type==_type){	
+				$('#assetInfo').append('<option value="'+assetsJsonData[node].guid+'" data-player="'+player+'" data-icon="'+icon+'" data-range="'+range+'"  >'+name+'</option>');
+			}
+		}
+	}
+	function linkAsset(){
+		var e = document.getElementById("assetType");
+		_type = e.options[e.selectedIndex].value;
+		if(_type=="pdf" && $("#start_page").val()>$("#end_page").val()){
+			alert("Start page '"+$("#start_page").val()+"' should not be more than End Page'"+$("#end_page").val()+"'");
+			return;
+		}
+		//$(".container").css("width","100%");
+		//_type = $('#assetType').val();
+		var e = document.getElementById("assetInfo");
+		_guid = e.options[e.selectedIndex].value;
+		_text = e.options[e.selectedIndex].text;
+		_icon = e.options[e.selectedIndex].getAttribute('data-icon');
+		_player = e.options[e.selectedIndex].getAttribute('data-player');
+		//_player = e.options[e.selectedIndex].data('player');
+		_range = e.options[e.selectedIndex].getAttribute('data-range');
+		//_range = e.options[e.selectedIndex].data('range');
+		if(!_player)
+			_player = _type;
+		//_name = $('#assetInfo').val();
+		console.log("_type:"+_type+"*****_guid:"+_guid+"*****_text:"+_text+"*****_icon:"+_icon+"*****_player:"+_player+"****_range:"+_range)
+		$("#addasset_"+selectedId).css("display","none");
+		
+		let temp = _text.split("_");
+		let lastorg = temp[temp.length-1];
+		if(lastorg*1){
+			lastorg = temp[temp.length-2]
+		}
+		$("#labelinput_"+selectedId).val(lastorg);
+		document.getElementById("editNodeInfo").style.display="none";
+		$('#assetType').val('0');
+		$('#assetInfo').html("");
+		// try{
+		// 		$('#start_page').value = 1;
+		// 		$('#start_page').min = 1;
+		// 		$('#start_page').max = _range;
+
+		// 		$('#end_page').value = _range;
+		// 		$('#end_page').min = 1;
+		// 		$('#end_page').max = _range;
+		
+		// }catch(er){
+		// 	console.log("er111:"+er);
+		// }				
+		
+		
+		var _arg = {};
+		try{
+
+		if(_type=="pdf")
+			$('#labelIcons_'+selectedId).attr("class","fa fa-file-pdf-o p-xs");
+		else if(_type=="mp4")
+			$('#labelIcons_'+selectedId).attr("class","fa fa-file-video-o p-xs");
+		else if(_type=="html5")
+			$('#labelIcons_'+selectedId).attr("class","fa fa-file p-xs");
+		else if(_type=="assessment")
+			$('#labelIcons_'+selectedId).attr("class","fa fa-puzzle-piece p-xs");
+		else
+			$('#labelIcons_'+selectedId).attr("class","fa fa-book p-xs");
+		  
+		}catch(er){
+			alert("er 232:"+er)
+		}      
+			_arg= {"startPage":$("#start_page").val(),"endPage":$("#end_page").val()};
+		console.log(_type+"******_arg:"+JSON.stringify(_arg)+"*******"+(_type=="pdf"));
+		var isShowinToc = $("input[name='showintoc']:checked").val();
+
+		// $('input[name="showintoc"]').prop('checked', false);
+		// $('input[name="showintoc"]').attr('checked', false);
+		var isShowinLivepage = $("input[name='showinlivepage']:checked").val();
+		// $('input[name="showinlivepage"]').prop('checked', false);
+		// $('input[name="showinlivepage"]').attr('checked', false);
+		//if(isShowinToc=="false")
+		$("input[name='showintoc']").parent().removeClass('active')
+		//if(isShowinLivepage=="false")
+		$("input[name='showinlivepage']").parent().removeClass('active')
+		$("input[name='showintoc']").removeAttr("checked");
+		$("input[name='showinlivepage']").removeAttr("checked");
+		tocdata[selectedId].name = lastorg;
+		tocdata[selectedId].itemType = _type;
+		tocdata[selectedId].icon = _icon;
+		tocdata[selectedId].player= _player;		
+		tocdata[selectedId].params=_arg;
+		tocdata[selectedId].showInToc= isShowinToc;
+		tocdata[selectedId].showInLivePage = isShowinLivepage;
+		tocdata[selectedId].downloadId = _guid;
+		$("#displaynameLabel_"+selectedId).text(lastorg);
+		$("#typeLabel_"+selectedId).text(_type);
+		$("#iconLabel_"+selectedId).text(_icon);
+		$("#playerLabel_"+selectedId).text(_player);
+		$("#paramsLabel_"+selectedId).text(JSON.stringify(_arg));
+		$("#showintocLabel_"+selectedId).text(isShowinToc);
+		$("#showinlivepageLabel_"+selectedId).text(isShowinLivepage);
+		$("#downloadidLabel_"+selectedId).text(_guid);
+		
+		$("#assetInfoLabel_"+selectedId).css("display","inline");
+			  
+//>guidLabel,displaynameLabel,typeLabel,iconLabel\,paramsLabel,showintocLabel,showinlivepageLabel,downloadidLabel
+				
+		//console.log(JSON.stringify(tocdata))
+	}
+	function getGUID() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+		}
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+	}
+	</script>
+</body>
+</html>

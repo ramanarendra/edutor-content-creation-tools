@@ -1,0 +1,663 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>jQuery edittreetable Plugin Example</title>
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" crossorigin="anonymous">
+	<!-- <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" crossorigin="anonymous"> -->
+	<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+	
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!-- <script type="text/javascript" src="http://cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script> -->	
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<!------ Include the above in your HEAD tag ---------->
+	<!-- Latest compiled and minified JavaScript -->
+	<!-- <script type="text/javascript" src="script.js"></script> -->
+	<!-- <link href="/stylesheets/googleinputstyle.css" rel="stylesheet" type="text/css"> -->
+	
+ 
+<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+<script>
+	var seoFilterVal;
+	var $container;
+	var presentId = 1;
+	var language ={};
+	var assetsJsonData;
+	var jsonFinaldata = {};
+	var final_json = [];
+	var presentId = 0;
+	var selectedRefenceId = "";
+	var selectedDownloadId ="";
+	var dom_obj = "";
+	var nodeData = [];	
+	
+	
+	function loadJsonData(){
+		try{
+			$.getJSON( "maths-book-ebook-toc.json", function( data ) {
+				final_json = data;
+				loadNodeDataIntoDom();
+			});
+		}catch(er){
+
+		}
+		_height = (typeof window.outerHeight != 'undefined')?Math.max(window.outerHeight, $(window).height()):$(window).height();
+		console.log("_height:"+_height)
+		$(".column").css("height",(_height-135)+"px")
+		for(var i=1;i<7;i++){
+			$("#column"+i+"Body").css("height",(_height-200)+"px") ;
+			$("#column"+i+"Body").css("overflow","scroll") ;
+			if(i>1)
+				$("#column"+i+"Body").parent().parent().css("visibility","hidden");
+		}
+		//document.getElementById("editNodeInfo").style.display="";
+		$.ajax({//http://ec2-13-250-46-76.ap-southeast-1.compute.amazonaws.com/content_assets.json
+				type: 'GET',
+				url: "http://13.233.76.145/content_assets.json",
+				processData: true,
+				data: {},
+				dataType: "json",
+				success: function (data) {
+					console.log("data:"+data);
+					assetsJsonData = data;
+					populateAssetType(data);
+				}
+		});		
+	}
+	
+	function loadNodeDataIntoDom(){
+		var objectReference = "final_json";		
+		for(let i=0; i<final_json.childs.length; i++){// iteration i (first)
+			let level1objectReference = objectReference+".childs["+i+"]";
+			addChild(1,level1objectReference,final_json.childs[i].name);
+		}
+	}
+	function loadLevelData(arg){
+		try{
+			$(arg).parent().parent().find('li').removeClass('active');
+			$(arg).parent().addClass("active");
+			refereId = $(arg).parent().attr("id").replace("node_","");
+			var tempData = eval(refereId);
+			temp = refereId.replace(/.childs/g,',').replace("final_json.","").replace(/\[/g,'').replace(/\]/g,'').split(",")
+			
+			
+			for(var index=temp.length;index<7;index++){
+				_bodyElement = $("#column"+(index)+"Body") ;
+				_bodyElement.html("");
+				if(index>temp.length)
+					_bodyElement.parent().parent().css("visibility","hidden");
+				else
+					_bodyElement.parent().parent().css("visibility","visible");
+			}
+			if(tempData.childs.length>0){
+				for(let o=0; o < tempData.childs.length; o++){// iteration 0 (7th)
+					modifiedRefereId = refereId+".childs["+o+"]";
+					addChild((temp.length),modifiedRefereId,tempData.childs[o].name);
+				}
+			}
+		}catch(er){
+			console.log("er 156:"+er)
+
+		}
+	}
+	function populateAssetType(data){ 
+		temp={};
+		$('#assetType').append('<option value="0" >slect</option>')
+		for(node in data){
+			var type = data[node].asset_type
+			if(!temp[type]){
+				temp[type] = 1;
+				$('#assetType').append('<option value="'+type+'">'+type+'</option>')
+			}
+		}
+	}
+	function assetVerify(_org){
+		var e = document.getElementById("assetInfo");
+		_guid = e.options[e.selectedIndex].value;
+		_text = e.options[e.selectedIndex].text;
+		_icon = e.options[e.selectedIndex].getAttribute('data-icon');
+		_player = e.options[e.selectedIndex].getAttribute('data-player');
+		_range = e.options[e.selectedIndex].getAttribute('data-range');
+		_launchURL = e.options[e.selectedIndex].getAttribute('data-launchurl');
+		
+			if(_player=="pdf"){
+				try{
+				$('#start_page').attr('value',1);
+				$('#start_page').attr('min',1);
+				$('#start_page').attr('max',_range);
+				$('#end_page').attr('value',_range);
+				$('#end_page').attr('min',1);
+				$('#end_page').attr('max',_range);
+				$('#pageGroup').css("display","inline");
+				}catch(er){
+					console.log(er)
+				}
+			}else{
+				$('#pageGroup').css("display","none");
+				//document.getElementById('paramsLabel_2').style.display="none";
+			}
+			$('#srcTag').css("display","");
+			$('#srcTag').html("<label style='width:20%'>src: </label><label>"+_launchURL+"</label>");
+			$('#iconpath').css("display","");
+			if(_icon=="" || _icon==null){
+				$('#iconpath').html('<div class="form-group"><label  style="width:20%" for="TOCFormControlSelect1">Upload Icon:</label><input id="iconURL" style="width: 75% !important;display:inline!important;"  type="file"></div>');
+			}
+			else{
+				$('#iconpath').html("<label style='width:20%'>icon url: </label><label>"+_icon+"</label>");
+			}
+							
+	}
+	function populateAssets(_org){
+		//console.log("selectedDownloadId:"+selectedDownloadId)
+		temp={};
+		$('#assetInfo').html("");
+		_type = $(_org).val();
+		//console.log("_type:"+_type)
+		
+		$('#assetInfo').append('<option value="0" >slect</option>')
+		for(node in assetsJsonData){
+			var name = assetsJsonData[node].name;
+			var player = assetsJsonData[node].player;
+			//console.log("assetsJsonData[node].icon_url:***"+assetsJsonData[node].icon_url);
+			var icon = assetsJsonData[node].icon_url;
+			var launchURL= "";
+			if(assetsJsonData[node].launch_url)
+				launchURL = assetsJsonData[node].launch_url;
+			var range=0;
+			if(player=="pdf"){
+				try{
+				range = assetsJsonData[node].page_count;
+				//console.log("range:"+range)
+				}catch(er){
+					console.log(er)
+				}
+			}
+			if(assetsJsonData[node].asset_type==_type){	
+				if(selectedDownloadId==assetsJsonData[node].guid){
+					//console.log((selectedDownloadId==assetsJsonData[node].guid)+"<--------value, selectedDownloadId==assetsJsonData[node].guid):"+selectedDownloadId+"=="+assetsJsonData[node].guid);
+				
+					$('#assetInfo').append('<option selected value="'+assetsJsonData[node].guid+'" data-player="'+player+'" data-icon="'+icon+'" data-launchurl="'+launchURL+'" data-range="'+range+'"  >'+name+'</option>');
+				
+				}else{
+					$('#assetInfo').append('<option value="'+assetsJsonData[node].guid+'" data-player="'+player+'" data-icon="'+icon+'" data-launchurl="'+launchURL+'" data-range="'+range+'"  >'+name+'</option>');
+				}
+			}
+		}
+	}
+	function linkAsset(){
+		document.getElementById("editNodeInfo").style.display="none";
+		//assetType
+		var e = document.getElementById("assetType");
+		_type = e.options[e.selectedIndex].value;
+		if(_type=="pdf" && $("#start_page").val()>$("#end_page").val()){
+			alert("Start page '"+$("#start_page").val()+"' should not be more than End Page'"+$("#end_page").val()+"'");
+			return;
+		}
+		var e = document.getElementById("assetInfo");
+		_guid = e.options[e.selectedIndex].value;
+		_text = e.options[e.selectedIndex].text;
+		_icon = e.options[e.selectedIndex].getAttribute('data-icon');
+		_player = e.options[e.selectedIndex].getAttribute('data-player');
+		_range = e.options[e.selectedIndex].getAttribute('data-range');
+		_launchurl = e.options[e.selectedIndex].getAttribute('data-launchurl');
+		if(_launchurl=="")
+			_launchurl= _text
+		if(_type=="pdf"){
+			if(_launchurl.split(".").length<2)
+				_launchurl = "/"+_launchurl+".pdf";
+			else
+				_launchurl = "/"+_launchurl;
+		}
+		else if(_type=="html" || _type=="html5"){
+			if(_launchurl.split(".").length<2)
+				_launchurl = "/"+_launchurl+".html";
+			else
+				_launchurl = "/"+_launchurl;
+		}
+		else if(_type=="mp4" || _type=="mp3"){
+			_launchurl = "/"+_guid+".m3u8";
+		}
+		else if(_type=="assessment"){
+			_launchurl = "/assessment.json";
+			
+		}
+		if(!_player)
+			_player = _type;
+		console.log("_type:"+_type+"*****_guid:"+_guid+"*****_text:"+_text+"*****_icon:"+_icon+"*****_player:"+_player+"****_range:"+_range+"****_launchurl:"+_launchurl)
+		
+		let temp = _text.split("_");
+		let lastorg = temp[temp.length-1];
+		if(lastorg*1){
+			lastorg = temp[temp.length-2]
+		}
+		//$("#labelinput_"+selectedId).val(lastorg);
+		$('#assetType').val('0');
+		$('#assetInfo').html("");
+		var _arg = {};
+		if(_type=="pdf")
+			_arg= {"start_page":$("#start_page").val(),"end_page":$("#end_page").val()};
+		//console.log(_type+"******_arg:"+JSON.stringify(_arg)+"*******"+(_type=="pdf"));
+		var isShowinToc = $("input[name='showintoc']:checked").val();
+		var isShowinLivepage = $("input[name='showinlivepage']:checked").val();
+		$("input[name='showintoc']").parent().removeClass('active')
+		//if(isShowinLivepage=="false")
+		$("input[name='showinlivepage']").parent().removeClass('active')
+		$("input[name='showintoc']").removeAttr("checked");
+		$("input[name='showinlivepage']").removeAttr("checked");
+		nodData = eval(selectedRefenceId);
+		nodData.guid = getGUID();
+		console.log("before:"+nodData.name)
+		document.getElementById("node_"+selectedRefenceId).childNodes[0].innerHTML =$("#nodeName").val();
+
+		nodData.name =$("#nodeName").val();
+		console.log("aftr:"+nodData.name)
+		nodData.itemType = $("#itemType").val();
+		nodData.icon = _icon;
+		nodData.player = _player;
+		nodData.params= _arg;
+		nodeData.showInToc = isShowInToc;
+		nodeData.showInLivePage =isShowinLivepage;
+		nodData.downloadId = _guid;
+		nodData.src = _launchurl;
+		nodData.label = $("#itemType").val();
+		nodData.metadata= JSON.parse($("#metadata").val());
+		//console.log("Josn final:"+JSON.stringify(nodData))		
+	}
+	function getGUID() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+		}
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+	}
+	
+</script>
+<style>
+		* {
+		  box-sizing: border-box;
+		}
+		
+		/* Create four equal columns that floats next to each other */
+		.column {
+		  float: left;
+		  width: 16.5%;
+		  /* padding: 10px; */
+		  position: relative;
+		  min-height: 95%; /* Should be removed. Only for demonstration */
+		}
+		.column h2{
+			text-align: center;
+		}
+		
+		.row{
+		padding-left:1%;
+		}
+		/* Clear floats after the columns */
+		.row:after {
+		  content: "";
+		  display: table;
+		  clear: both;
+		}
+		.add-node{
+			position: absolute;
+			bottom: 0px;
+			margin-left: 0px !important;
+		}
+		
+		body { background-color:#fafafa; font-family:'Open Sans', Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+body {
+  background: #C5E1A5;
+}
+.form {
+  /* padding: 10px; */
+  background: #efefef;
+  /*padding: 60px 120px 80px 120px;*/
+  /* text-align: center; */
+  -webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+  box-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+}
+label {
+  display: inline-block;
+  margin-left:0em;
+  margin-right: 0.4em;
+  position: relative;
+  /* margin: 2px 0px; */
+}
+.inputlabel {
+  display: block!important;
+  position: relative;
+  /* margin: 8px 10px; */
+}
+input {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  /* border: 0px !important; */
+  outline: none;
+  padding-left:0px !important;
+  margin-left: 0px !important;
+}
+
+
+button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: rgb(220,220,220);
+  font-weight: bold;
+  color: rgb(120,120,120);
+  border: none;
+  outline: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: ease .3s;
+}
+
+button:hover {
+  background: #8BC34A;
+  color: #105dc2;
+}
+
+		</style>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+
+	<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" type="text/css" media="screen" title="no title" charset="utf-8"/>
+	
+<script src="http://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
+
+</head>
+<body onload="loadJsonData()">
+<div id="dialog" title="Alert message" style="display: none">
+            <div class="ui-dialog-content ui-widget-content">
+                <p>
+                    <label id="lblMessage">
+					</label>
+					<textarea id="jsonEditView" style="display:none" maxlength="50000" cols="75" rows="16"></textarea>
+                </p>
+            </div>
+		</div>
+<script>
+
+	function addChild(level,referenceId,content) {
+		try{
+			_bodyElement = $("#column"+level+"Body") ;
+			_titleElement = $("#column"+level+"Title") ;
+			_len = _bodyElement.children().length+1
+			console.log("len:"+_len)
+			_bodyElement.append('<li  class="list-group-item" id="node_' + referenceId+'"><div  ondblclick="editNode(this)" onclick="loadLevelData(this);">'+content +'</div><i id="edit_' + referenceId+'"  class="fa fa-edit j-edit" style="position:absolute;right:0px;top:0px;padding:0.25em;" onclick="editNode(this)"></i><i id="delete_' + referenceId+'" class="fa fa-trash j-trash" style="position:absolute;right:0px;bottom:0px;padding:0.25em;" onclick="deleteNode(this)"></i></li>');
+		}catch(er){
+			console.log("er at addchild 1129:"+er)
+		}
+	
+	}
+	function addNode(level){
+		try{
+			_bodyElement = $("#column"+level+"Body") ;
+			_titleElement = $("#column"+level+"Title").val() ;
+			lastChildId = $("#column"+level+"Body li:last-child").attr('id').replace("node_","");
+			temp = lastChildId.replace(/.childs/g,',').replace("final_json","").replace(/\[/g,'').replace(/\]/g,'').split(",")
+			modifiedRefereId = lastChildId.substring(0,lastChildId.length-2)+(temp.length+1)+"]"; 
+			_len = _bodyElement.children().length+1;
+			//console.log("modifiedRefereId:"+lastChildId.substring(0,lastChildId.length-3)+"*********temp[]:"+temp)
+			temp_obj = {"guid": "","name": "","itemType": "video","icon": "https://portal.com/icon.jpg",
+                      "player": "video","params": "","metadata":{}, "showInToc": true,"showInLivePage": false,
+                      "downloadId": "","src": "","label": "video","childs":[]};
+			temp_obj.guid = getGUID();
+			temp_obj.name = _titleElement+" "+(_len);
+			eval(lastChildId.substring(0,lastChildId.length-3)).push(temp_obj);
+			//console.log(modifiedRefereId+"**eval(modifiedRefereId):"+eval(modifiedRefereId).name)
+			addChild((temp.length-1),modifiedRefereId,_titleElement+" "+(_len));
+		}catch(er){
+			console.log("er at addNode 345:"+er)
+		}
+
+	}
+	function editNode(arg){
+		//final_json.childs[i].childs[j].childs[k].childs[l].childs[m].childs[n].childs[o]
+		selectedRefenceId = arg.id.replace("edit_","");
+		console.log("selectedRefenceId:"+selectedRefenceId)
+		nodData = eval(selectedRefenceId);
+		console.log("nodData.name:"+nodData.name)
+		$("#nodeName").attr('value',nodData.name);
+		$("#nodeName").val(nodData.name);
+		$("#itemType").attr('value',nodData.itemType);
+		$("#itemType").val(nodData.itemType);
+		$("#metadata").attr('value',JSON.stringify(nodData.metadata));
+		$("#metadata").val(JSON.stringify(nodData.metadata));
+		isShowInToc = nodeData.showInToc;
+		if(isShowInToc){
+			$($("input[name='showintoc']")["0"]).parent().addClass("active");
+			$($("input[name='showintoc']")["0"]).attr("checked","checked");
+			//$("input[name='showintoc']")[0].addAttr("checked");
+		}else{
+			$($("input[name='showintoc']")["1"]).parent().addClass("active");
+			$($("input[name='showintoc']")["1"]).attr("checked","checked");
+		}
+		isShowInLivePage = nodeData.showInLivePage;
+		if(isShowInLivePage){
+			$($("input[name='showinlivepage']")["0"]).parent().addClass("active");
+			$($("input[name='showinlivepage']")["0"]).attr("checked","checked");
+		//	$("input[name='showinlivepage']").parent().removeClass('active')
+		//	$("input[name='showinlivepage']").removeAttr("checked");
+		}else{
+			$($("input[name='showinlivepage']")["1"]).parent().addClass("active");
+			$($("input[name='showinlivepage']")["1"]).attr("checked","checked");
+		}
+	//	$("#nodeName").attr('value',1);
+		//var isShowinToc = $("input[name='showintoc']:checked").val();
+		let params = nodData.params
+		itemType = nodData.itemType;
+		selectedDownloadId = nodData.downloadId;
+		console.log("itemtype seletted:"+itemType)
+		if(itemType=="video"){
+			$("#assetType").val("mp4").change();
+		}else if(itemType=="pdf"){
+			$("#assetType").val("pdf").change();
+		}else if(itemType=="assessment"){
+			$("#assetType").val("assessment").change();
+		}else if(itemType=="html5"){
+			$("#assetType").val("html5").change();
+		}else if(itemType=="mp3"){
+			$("#assetType").val("mp3").change();
+		}
+		//if($("#assetType").val()!=0 || $("#assetType").val()!="0")
+			//populateAssets($("#assetType"));
+		//{"startPage":$("#start_page").val(),"endPage":$("#end_page").val()}
+		$('#start_page').attr('value',params.start_page);
+	//	$('#start_page').attr('min',1);
+		//$('#start_page').attr('max',10);
+		$('#end_page').attr('value',params.end_page);
+		
+		document.getElementById("editNodeInfo").style.display="";
+	}
+	function closeEditNodeBlock(){
+		document.getElementById("editNodeInfo").style.display="none";
+
+	}
+	function deleteNode(arg){
+		//console.log("arg.id:"+arg.id)
+		refereId = arg.id.replace("delete_","");
+		list = eval(refereId.substring(0,refereId.length-3));
+		//console.log("list.lengght:"+list.length+"*****"+eval(arg.id.replace("delete_","")))
+		list.splice($.inArray(eval(arg.id.replace("delete_","")), list), 1);	
+		temp = refereId.replace(/.childs/g,',').replace("final_json.","").replace(/\[/g,'').replace(/\]/g,'').split(",")
+		for(var index=temp.length;index<7;index++){
+			_bodyElement = $("#column"+(index)+"Body") ;
+			_bodyElement.html("");
+			if(index>=temp.length)
+				_bodyElement.parent().parent().css("visibility","hidden");
+			else
+				_bodyElement.parent().parent().css("visibility","visible");
+		}
+		$(arg).parent().remove();
+		
+		//console.log("list.lengght:"+list.length+"%%%%%%%%%%%%")
+		//eval(refereId) = list;
+		//temp = refereId.replace(/.childs/g,',').replace("final_json","").replace(/\[/g,'').replace(/\]/g,'')
+		
+	}
+	function removeThis(j) {
+		$("#introlabelname" + j).remove();
+		$("#minus" + j).remove();
+	}
+	
+</script>
+
+
+	
+
+<div id="tocCreationInfo" >
+		
+	<div class="container" style="position:relative;margin: 0px!important;max-width: 100%">			
+		<div id="bs-treeetable" class="treetable" style="margin: 0px; padding: 0px; vertical-align: top;">
+				<div id="player"></div>
+			<h2>Title & Navbar</h2>
+
+			<div class="row">
+				<div class="column" style="background-color:#aaa;">
+						<input type='text' style="line-height:1em;padding:5px;text-align:center;border: 0px !important;font-size: 1.8em;font-weight: normal" value="Chapter"  placeholder="Chapter" id='column1Title'>
+						<div ><ul id='column1Body' class="list-group"></ul></div>
+					<input type="button" class="btn btn-success btn-sm add-node" name="plus" value="+" style="font-size:21px; line-height:12px; border-radius:4px; margin:3px; margin-bottom:6px;" onclick="addNode(1);">
+				</div>
+				<div class="column" style="background-color:#bbb;">
+						<input type='text' style="line-height:1em;padding:5px;text-align:center;border: 0px !important;font-size: 1.8em;font-weight: normal" value="Topic" name="Topic" placeholder="Topic" id='column2Title'>
+						<div ><ul id='column2Body' class="list-group"></ul></div>
+					<input type="button" class="btn btn-success btn-sm add-node" name="plus" value="+" style="font-size:21px; line-height:12px; border-radius:4px; margin:3px; margin-bottom:6px;" onclick="addNode(2);">
+				</div>
+				<div class="column" style="background-color:#ccc;">
+						<input type='text' style="line-height:1em;padding:5px;text-align:center;border: 0px !important;font-size: 1.8em;font-weight: normal" value="Concept"  placeholder="Concept" id='column3Title'>
+						<div><ul  id='column3Body' class="list-group"></ul></div>
+					<input type="button" class="btn btn-success btn-sm add-node" name="plus" value="+" style="font-size:21px; line-height:12px; border-radius:4px; margin:3px; margin-bottom:6px;" onclick="addNode(3);">
+				</div>
+				<div class="column" style="background-color:#ddd;">
+						<input type='text' style="line-height:1em;padding:5px;text-align:center;border: 0px !important;font-size: 1.8em;font-weight: normal" value="Milestone"  placeholder="Milestone" id='column4Title' >
+						 
+						<div ><ul id='column4Body' class="list-group"></ul></div>
+					<input type="button" class="btn btn-success btn-sm add-node" name="plus" value="+" style="font-size:21px; line-height:12px; border-radius:4px; margin:3px; margin-bottom:6px;" onclick="addNode(4);">
+				</div>
+				<div class="column" style="background-color:#eee;">
+						<input type='text' style="line-height:1em;padding:5px;text-align:center;border: 0px !important;font-size: 1.8em;font-weight: normal" value="Asset"  placeholder="Asset" id='column5Title'>
+						
+						<div ><ul id='column5Body' class="list-group"></ul></div>
+					<input type="button" class="btn btn-success btn-sm add-node" name="plus" value="+" style="font-size:21px; line-height:12px; border-radius:4px; margin:3px; margin-bottom:6px;" onclick="addNode(5);">
+				</div>
+				<div class="column" style="background-color:#fff;">
+						<input type='text' style="line-height:1em;padding:5px;text-align:center;border: 0px !important;font-size: 1.8em;font-weight: normal" value="Assessment"  placeholder="Assessment" id='column6Title'>						 
+					<div ><ul id='column6Body' class="list-group"></ul></div>
+					<input type="button" class="btn btn-success btn-sm add-node" name="plus" value="+" style="font-size:21px; line-height:12px; border-radius:4px; margin:3px; margin-bottom:6px;" onclick="addNode(6);">
+				</div>
+			</div>
+
+
+		</div>	
+	</div>
+	<div id="editNodeInfo" style="display:none;position:fixed;width:100%!important;background:grey;height:100%!important;overflow:scroll;margin: 0px; padding: 0px;top:0px;left:0px;z-index: 10000;">
+		<div class="form" style="width:80%;margin-left:10%;margin-top:1%;padding:1%">
+			<i class="fa fa-close j-close fa-2x" style="position:absolute;right:10.1%;top:1.1%;padding:0.5em;" onclick="closeEditNodeBlock()"></i>	
+			
+			<div class="fti-feedbackForm " >
+					<div class="field-wrapper">
+						<div class="form-group floatLabels focused">
+							<label style="width:20%" class="control-label">Name</label>
+							<input name="nodeName" style="display:inline;width:75%" id="nodeName" type="text" class="form-field form-control elEncodeCobrowse" required="t" onpaste="return false" data-gcb-service-node="true" value="">
+						</div>
+						<div class="nodeName-error field-error"></div>
+					</div>
+			</div>
+			<div class="form-group">
+				<div class="fti-feedbackForm " >
+					<div class="field-wrapper">
+					   <div class="form-group floatLabels focused">
+						  <label  style="width:20%"  class="control-label">Item Type</label>
+						  <input style="width: 75%; display:inline;" name="itemType" id="itemType" type="text" class="form-field form-control elEncodeCobrowse" required="t" onpaste="return false" data-gcb-service-node="true" value="">
+					   </div>
+					   <div class="itemType-error field-error"></div>
+					</div>
+				 </div>
+			</div>
+			<div class="form-group">
+				<div class="fti-feedbackForm " >
+					<div class="field-wrapper">
+					   <div class="form-group floatLabels focused">
+						  <label  style="width:20%" class="control-label">Meta Data</label>
+						  <input style="width:75%; display:inline;" name="metadata" id="metadata" type="text" class="form-field form-control elEncodeCobrowse" required="t" onpaste="return false" data-gcb-service-node="true" value="">
+					   </div>
+					   <div class="metadata-error field-error"></div>
+					</div>
+				 </div>
+			</div>
+			<div class="form-group">
+				<label for="TOCFormControlSelect1"  style="width:20%">Select asset type:</label>
+				<select style="display:inline;width:75%" id="assetType" onchange="populateAssets(this)">
+				</select>
+			  </div>
+			  <div class="form-group">
+				<label for="TOCFormControlSelect2"  style="width:20%">Select asset:</label>
+				<select style="display:inline;width:75%" id="assetInfo" onchange="assetVerify(this)">
+				</select>
+			  </div>						
+			  <!-- <div class="form-group">
+				  <label for="TOCFormControlInput1">Icon</label>
+				  <input type="text" class="input" placeholder="https://portal.com/icon.jpg">
+			  </div>					 -->
+			  <div id="pageGroup" class="form-group" style="display:none">
+				  <label style="width:20%;" for="TOCFormControlInput1">Select Page starts from </label>
+				  <input style="width:3em!important;display:inline;height:auto;padding: 1px;margin: 0px;" id="start_page" min="1" max="1" type="number"  placeholder="start page number" value="1">
+				  <label style="margin-left:1em" for="TOCFormControlInput1"> to </label>
+				  <input style="display:inline; width:3em!important; height:auto;padding: 1px;margin: 0px;" id="end_page" min="1" max="1"  type="number" placeholder="end page number" value="1">
+			  </div>
+			  <div id="srcTag" for="TOCFormControlInput1" style="display:none;">src:</div>
+					
+			  <div id="iconpath" for="TOCFormControlInput1" style="display:none">Icon Path:</div>
+					
+			  
+			  <!-- <div id="endPageGroup" class="form-group" style="display:none">
+				<label for="TOCFormControlInput1">End Page:</label>
+				<input id="end_page" type="number" class="input" placeholder="">
+			</div> -->
+			  <!-- <div class="form-group">
+				<label for="TOCFormControlTextarea1">Select Player</label>
+				<input type="text" class="input" placeholder="Select Player">
+			  </div> -->
+			  <div class="form-group">
+				<label for="TOCFormControlTextarea1"  style="width:20%">Show In TOC:</label>
+				<div class="btn-group btn-group-toggle" data-toggle="buttons" style="width:75%">
+					  <label class="btn btn-outline-primary">
+						  <input type="radio" name="showintoc" value="true"  autocomplete="off" > True
+					  </label>
+					  <label class="btn btn-outline-primary">
+						  <input type="radio" name="showintoc"  value="false" autocomplete="off"> False
+					  </label>
+				  </div>
+			  </div>
+			  <div class="form-group">
+				<label  style="width:20%" for="TOCFormControlTextarea1">Show In Livepage:</label>
+				<div  style="width:75%" class="btn-group btn-group-toggle" data-toggle="buttons">
+					  <label class="btn btn-outline-primary">
+						  <input type="radio" name="showinlivepage"  value="true" autocomplete="off" > True
+					  </label>
+					  <label class="btn btn-outline-primary">
+						  <input type="radio" name="showinlivepage"  value="false" autocomplete="off"> False
+					  </label>
+				  </div>
+			  </div>					
+				
+				<!-- <div class="line-box">
+					<div class="line"></div>
+				</div> -->
+				<button  style="width:100%;text-align: center" type="submit"  onclick="linkAsset()" >submit</button>
+			</div>
+			
+</div>
+	</div>
+	
+
+</body>
+</html>

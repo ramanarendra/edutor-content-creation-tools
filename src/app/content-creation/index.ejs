@@ -1,0 +1,915 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>TOC creation</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css" crossorigin="anonymous">
+	<!-- <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" crossorigin="anonymous"> -->
+	<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+	
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script> -->
+	
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	
+	<!-- <script type="text/javascript" src="http://cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script> -->	
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<!------ Include the above in your HEAD tag ---------->
+	<!-- Latest compiled and minified JavaScript -->
+	<script type="text/javascript" src="/javascripts/jquery.edittreetable.js"></script>
+	
+ 
+<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.min.js"></script>
+
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.11.1/themes/smoothness/jquery-ui.css" />
+
+	<link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css" type="text/css" media="screen" title="no title" charset="utf-8"/>
+	<style>
+    body { background-color:#fafafa; font-family:'Open Sans', Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+body {
+  background: #C5E1A5;
+}
+.form {
+  padding: 10px;
+  background: #efefef;
+  /*padding: 60px 120px 80px 120px;*/
+  /* text-align: center; */
+  -webkit-box-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+  box-shadow: 2px 2px 3px rgba(0,0,0,0.1);
+}
+label {
+  display: inline-block;
+  margin-left:0em;
+  margin-right: 0.4em;
+  position: relative;
+  /* margin: 2px 0px; */
+}
+.inputlabel {
+  display: block!important;
+  position: relative;
+  /* margin: 8px 10px; */
+}
+input {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  /* border: 0px !important; */
+  outline: none;
+  padding-left:0px !important;
+  margin-left: 0px !important;
+}
+
+.line-box {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: #BCBCBC;
+}
+
+.line {
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #8BC34A;
+  transition: ease .6s;
+}
+
+input:focus + .line-box .line {
+  width: 100%;
+}
+
+.label-txt {
+  position: absolute;
+  top: -0.8em;
+  /* padding: 6px; */
+  padding-bottom: 0px;
+  font-family: sans-serif;
+  font-size: 1em;
+  letter-spacing: 1px;
+  color: rgb(120,120,120);
+  transition: ease .3s;
+}
+
+.label-active {
+  top: -0.8em;
+}
+
+button {
+  display: inline-block;
+  padding: 12px 24px;
+  background: rgb(220,220,220);
+  font-weight: bold;
+  color: rgb(120,120,120);
+  border: none;
+  outline: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: ease .3s;
+}
+
+button:hover {
+  background: #8BC34A;
+  color: #105dc2;
+}
+.fa-caret-down{
+	font-size:2em;
+}
+.fa-caret-right{
+	font-size:2em;
+}
+		.treetable{
+
+		}
+		.treetable .fa{
+			cursor: pointer;
+			padding-right: 5px;
+		}
+		.treetable .rowhidden{
+			display: none;
+		}
+		.treetable .j-addChild{
+			display: none1;
+		}
+		.treetable .selected .j-addChild{
+			display: inline;
+		}
+		.treetable .btn-outline{
+			background-color: transparent;
+		}
+		.treetable .form-control{
+			width: auto;
+			display: inline-block;
+			font-size: 1.5rem;
+		}
+		.treetable .textalign-center{
+			text-align: center;
+		}
+		.treetable .j-expend{
+			cursor: pointer;
+			/*width: 35% !important;*/
+			text-align: left !important;
+		}
+		.treetable .maintitle{
+			width: 35% !important;
+		}
+		.treetable .j-remove{
+			padding: 8px;
+			cursor: pointer;
+			font-size: 16px;
+			color:red;
+		}
+		.treetable .tt-header{
+			margin-top:10px;
+		}
+		/* .treetable .class-level-2 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 20px;
+		}
+		.treetable .class-level-3 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 44px;
+		}
+		.treetable .class-level-4 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 76px;
+		}
+		.treetable .class-level-5 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 108px;
+		}
+		.treetable .class-level-6 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 140px;
+		}
+		.treetable .class-level-7 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 172px;
+		}
+		.treetable .class-level-8 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 204px;
+		}
+		.treetable .class-level-9 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 236px;
+		}
+		.treetable .class-level-10 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 268px;
+		}
+		.treetable .class-level-11 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 300px;
+		}
+		.treetable .class-level-12 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 332px;
+		}
+		.treetable .class-level-13 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 374px;
+		}
+		.treetable .class-level-14 .class-level-ul .j-expend{
+			position: relative;
+			margin-left: 406px;
+		} */
+		.class-level-1{
+			position: relative;
+			margin-left: 20px;
+		}
+		.class-level-2{
+			position: relative;
+			margin-left: 35px;
+		}
+		.class-level-3{
+			position: relative;
+			margin-left: 50px;
+		}
+		.class-level-4{
+			position: relative;
+			margin-left: 65px;
+		}
+		.class-level-5{
+			position: relative;
+			margin-left: 80px;
+		}
+		.class-level-6{
+			position: relative;
+			margin-left: 95px;
+		}
+		.class-level-7{
+			position: relative;
+			margin-left: 110px;
+		}
+		.class-level-8{
+			position: relative;
+			margin-left: 125px;
+		}
+		.class-level-9{
+			position: relative;
+			margin-left: 140px;
+		}
+		.class-level-10{
+			position: relative;
+			margin-left: 155px;
+		}
+		.class-level-11{
+			position: relative;
+			margin-left: 170px;
+		}
+		.class-level-12{
+			position: relative;
+			margin-left: 185px;
+		}
+		.class-level-13{
+			position: relative;
+			margin-left: 200px;
+		}
+		.class-level-14{
+			position: relative;
+			margin-left: 215px;
+		} 
+		.treetable .class-level-1 {
+			border-bottom: dashed 1px #eee;
+		}
+		.treetable .class-level-ul{
+			padding: 0;
+			margin-bottom: 2px;
+		}
+		.treetable .class-level-ul li {
+			float: left;
+			text-align: center;
+			vertical-align: middle;
+			padding: 1px 10px;
+			/*min-width: 120px;*/
+			list-style: none;
+		}
+		.treetable .class-level-ul:after {
+			display: block;
+			clear: both;
+			height: 0;
+			content: "\0020";
+		}
+		.treetable .tt-header div span {
+			width: auto;
+			line-height: 29px;
+			display: inline-block;
+			min-width: 120px;
+			text-align: center;
+		}
+		.treetable .tt-body{
+			border: solid 1px #DDD;
+			padding-top: 1px;
+			background-color:#FFF;
+		}
+		.treetable .tt-header div{
+			border: solid 1px #DDD;
+			border-bottom:none;
+			background-color:#FFF;
+		}
+		.showcss{ display:block;}
+  .hidecss{ display:none;}
+	</style>
+	
+</head>
+<body onload="loadJsonData()">
+<!--div id="jquery-script-menu">
+<div class="jquery-script-clear"></div>
+</div-->
+		<!--<br>
+		<h5>Multiple Columns</h5>
+		<div id="bs-ml-treetable" class="treetable">
+			Loading ...
+		</div-->
+		<!-- <form id='sendform' style='display:none' action="/action_page.php"
+		oninput="x.value=parseInt(a.value)+parseInt(b.value)">
+		<input type="file" id="fileinput" name="tocjson">
+	   <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
+		<input type="submit">
+	  </form>  -->
+		<div id="dialog" title="Alert message" style="display: none">
+            <div class="ui-dialog-content ui-widget-content">
+                <p>
+                    <label id="lblMessage">
+					</label>
+					<textarea id="jsonEditView" style="display:none" maxlength="50000" cols="75" rows="16"></textarea>
+                </p>
+            </div>
+        </div>
+		<div id="tocCreationInfo" >
+	<div class="container" style="position:relative;margin: 0px!important;max-width: 99%">			
+		<div id="bs-treeetable" class="treetable" style="margin: 0px; padding: 0px; vertical-align: top;">
+			Loading ...
+		</div>	
+	</div>
+	<div id="editNodeInfo" style="display:none;position:fixed;width:100%!important;background:grey;height:100%!important;overflow:scroll;margin: 0px; padding: 0px;top:0px;left:0px">
+			<div class="form" style="position:fixed;width:60%;margin-left:20%;margin-top:5%">
+				<div class="form-group">
+					<label for="TOCFormControlSelect1">Select asset type:</label>
+					<select class="form-control" id="assetType" onchange="populateAssets(this)">
+					</select>
+				  </div>
+				  <div class="form-group">
+					<label for="TOCFormControlSelect2">Select asset:</label>
+					<select class="form-control" id="assetInfo" onchange="assetVerify(this)">
+					</select>
+				  </div>						
+				  <!-- <div class="form-group">
+					  <label for="TOCFormControlInput1">Icon</label>
+					  <input type="text" class="input" placeholder="https://portal.com/icon.jpg">
+				  </div>					 -->
+				  <div id="startPageGroup" class="form-group" style="display:none">
+					  <label for="TOCFormControlInput1">Start Page:</label>
+					  <input style="display:inline; width: 4em !important;" id="start_page" min="1" max="10" type="number" class="input" placeholder="start page number" value="1">
+					  <label for="TOCFormControlInput1">End Page:</label><input id="end_page" min="1" max="10" style="display:inline; width: 4em !important;" type="number" class="input" placeholder="end page number" value="5">
+				  </div>
+				  
+				  <!-- <div id="endPageGroup" class="form-group" style="display:none">
+					<label for="TOCFormControlInput1">End Page:</label>
+					<input id="end_page" type="number" class="input" placeholder="">
+				</div> -->
+				  <!-- <div class="form-group">
+					<label for="TOCFormControlTextarea1">Select Player</label>
+					<input type="text" class="input" placeholder="Select Player">
+				  </div> -->
+				  <div class="form-group">
+					<label for="TOCFormControlTextarea1">Show In TOC:</label>
+					<div class="btn-group btn-group-toggle" data-toggle="buttons">
+						  <label class="btn btn-outline-primary">
+							  <input type="radio" name="showintoc" value="true"  autocomplete="off" > True
+						  </label>
+						  <label class="btn btn-outline-primary">
+							  <input type="radio" name="showintoc"  value="false" autocomplete="off"> False
+						  </label>
+					  </div>
+				  </div>
+				  <div class="form-group">
+					<label for="TOCFormControlTextarea1">Show In Livepage:</label>
+					<div  class="btn-group btn-group-toggle" data-toggle="buttons">
+						  <label class="btn btn-outline-primary">
+							  <input type="radio" name="showinlivepage"  value="true" autocomplete="off" > True
+						  </label>
+						  <label class="btn btn-outline-primary">
+							  <input type="radio" name="showinlivepage"  value="false" autocomplete="off"> False
+						  </label>
+					  </div>
+				  </div>					
+					
+			<!-- <div class="line-box">
+					<div class="line"></div>
+					</div> -->
+				<button type="submit"  onclick="linkAsset()" >submit</button>
+				</div>
+				
+	</div>
+</div>
+<script type="text/javascript">
+	var assetsJsonData;
+	var jsonFinaldata = {};
+	var final_json = [];
+	var presentId = 0;
+	var selectedId = 0;
+	
+
+	var dom_obj = "";
+	var nodeData = [];
+	//localStorage.removeItem('tocJsonList')
+	function selectJsonFromStorage(){
+
+	}
+	var existing = localStorage.getItem('tocJsonList');
+
+	// If no existing data, create an array
+	// Otherwise, convert the localStorage string to an array
+	existing = existing ? existing.split(',') : [];
+	
+		var settings2 = {
+			container:window,
+			customalert:function(msg){
+				alert(msg);
+			},
+			customconfirm:function(msg){
+				return confirm(msg);
+			},
+			text:{
+				NodeDeleteText:"Do you want to load previous data?"
+			}
+		};
+		
+
+		function ShowCustomDialog(htmlContext)
+		{
+			ShowDialogBox('Stored TOC List ',htmlContext,'Ok','', 'GoToAssetList',null);
+		}
+
+		function ShowDialogBox(title, content, btn1text, btn2text, functionText, parameterList) {
+			var btn1css;
+			var btn2css;
+
+			if (btn1text == '') {
+				btn1css = "hidecss";
+			} else {
+				btn1css = "showcss";
+			}
+
+			if (btn2text == '') {
+				btn2css = "hidecss";
+			} else {
+				btn2css = "showcss";
+			}
+			$("#lblMessage").html(content);
+			function CloseFunction(){
+				//alert('close funciton');
+				//loadDomNode();
+			}
+			$("#dialog").dialog({
+				resizable: false,
+				title: title,
+				modal: true,
+				width: '60%',
+				height: 'auto',
+				position: ['center',20] ,
+				bgiframe: false,
+				hide: { effect: 'scale', duration: 400 },
+				close: CloseFunction,
+				dialogClass: 'surveyDialog',
+				open: function(event, ui) {
+					$(this).parent().css({'margin-left': "20%"});
+				},
+				buttons: [
+								{
+									text: btn1text,
+									"class": btn1css,
+									click: function () {	
+
+										var textareaObj = document.getElementById('jsonEditView');	
+										if(textareaObj.style.display=="none"){						
+										var value = ($("input[type='radio'][name='gender']:checked").val());
+										loadDomNode(value);
+										$("#dialog").dialog('close');
+										}
+										else if(textareaObj.style.display==""){
+											value = textareaObj.name;
+											console.log("value:"+value+" , textareaObj.value"+ textareaObj.value);
+											localStorage.removeItem(value)
+											localStorage.setItem(value, textareaObj.value); 
+											//$("#dialog").dialog('close');
+											$('#jsonEditView').css("display","none");
+										$('#lblMessage').css("display","");
+
+
+										}
+									}
+								},
+								{
+									text: btn2text,
+									"class": btn2css,
+									click: function () {
+										alert('cliseo')
+										loadDomNode();
+										$("#dialog").dialog('close');
+									}
+								}
+							]
+			});
+	}
+
+	function init(){
+		if(localStorage.getItem(existing[0]) && settings2.customconfirm(settings2.text.NodeDeleteText) ){
+			//$(document).ready(function(){
+				cData ="";
+				for(var i=0;i<existing.length;i++){
+					cData += '<p><span class="ui-icon ui-icon-arrowthick-1-e" style=" margin-right: 20px;display:inline-block; "></span><span style="display:inline; margin-right: 2em ">'+existing[i].split('_')[1]+'</span><input style="display:inline;width:auto;margin-right:2em;" name="gender" type="radio" value="'+existing[i]+'"/><button  onclick="showJson(this)" value="'+existing[i]+'">Edit</button>&nbsp;&nbsp;&nbsp;<button  onclick="viewFinalOutput(this)" value="'+existing[i]+'">View</button></p>';
+				}
+				//cData += '</form>'
+				ShowCustomDialog(cData);
+			//});
+		}
+		else{
+			loadDomNode();
+		}
+	}
+	var modifiedJsonVal;
+	function showJson(org){
+		modifiedJsonVal = org.value;
+		console.log(localStorage.getItem(org.value+""))
+		console.log("org.value")
+		console.log(org.value)
+		var div = document.getElementById("jsonEditView");
+		div.value = "";
+		// var input = document.createElement("textarea");
+		// var button = document.createElement("button");
+		// button.value = "submit";
+		// button.innerText = "submit";
+		// input.value = localStorage.getItem(org.value+"");
+		// input.name = "post";
+		// input.maxLength = "5000";
+		// input.cols = "80";
+		// input.rows = "40";
+		// //div.innerHTML="";
+		// div.appendChild(input); //appendChild
+		//div.appendChild(button);
+		$('#jsonEditView').css("display","");
+		$('#lblMessage').css("display","none");
+		$('#jsonEditView').attr("name",modifiedJsonVal+"");
+		//$('#jsonEditView').html(localStorage.getItem(org.value+""));
+		div.value = localStorage.getItem(org.value+"").replace(",",",   ");
+	}
+	
+	function viewFinalOutput(org){
+		modifiedJsonVal = org.value;
+		console.log(localStorage.getItem(org.value+""))
+		console.log("org.value")
+		console.log(org.value)
+		var div = document.getElementById("jsonEditView");
+		div.value = "";
+		// var input = document.createElement("textarea");
+		// var button = document.createElement("button");
+		// button.value = "submit";
+		// button.innerText = "submit";
+		// input.value = localStorage.getItem(org.value+"");
+		// input.name = "post";
+		// input.maxLength = "5000";
+		// input.cols = "80";
+		// input.rows = "40";
+		// //div.innerHTML="";
+		// div.appendChild(input); //appendChild
+		//div.appendChild(button);
+		$('#jsonEditView').css("display","");
+		$('#lblMessage').css("display","none");
+		$('#jsonEditView').attr("name",modifiedJsonVal+"");
+		//$('#jsonEditView').html(localStorage.getItem(org.value+""));
+		//jsonObj = JSON.parse(localStorage.getItem(org.value+""))
+		temp = localStorage.getItem(org.value+"").replace(",",",   ")
+		temp = temp.replace(/("innercode")(.+?)(?="guid")/g, '$1');
+		temp = temp.replace(/"innercode"/g,"");
+		temp = temp.replace(/("id")(.+?)(?="icon")/g, '$1');
+		temp = temp.replace(/"id"/g,"");
+		//temp = temp.replace(/(innercode)(.+?)(?=guid)/g, "$1 guid");
+		div.value = temp;
+	}
+	function createChilsData(_data){
+		var tempNode = { id:_data.id,name:_data.name,pid:_data.pid*1,level:_data.level*1,pinnercode:_data.id,innercode:_data.innercode,guid:_data.guid,type: _data.itemType,metadata: _data.metadata,icon: _data.icon,player: _data.player,params: _data.params,showInToc: _data.showInToc,
+		showInLivePage: _data.showInLivePage,downloadId: _data.downloadId,src: _data.src,rootSrc: _data.rootSrc};
+		nodeData.push(tempNode);
+		//console.log("tempNode:"+JSON.stringify(tempNode));
+		if(_data.childs && _data.childs.length>0){
+			for(var k=0;k<_data.childs.length;k++){
+				createChilsData(_data.childs[k]);
+			}
+		}			
+	}
+	function loadDomNode(_val){
+		if(_val)
+			dom_obj = localStorage.getItem(_val+"");
+		var json_data ={};
+		console.log("dom_obj:"+dom_obj);
+		if(dom_obj && dom_obj!=undefined && dom_obj.length>1)
+			json_data = JSON.parse(dom_obj);
+		var rootIndex = 0;
+		if(json_data && json_data!=null)
+			createChilsData(json_data);
+		console.log("_data:"+JSON.stringify(nodeData))
+		
+		
+		tocdata = {};
+		index = 0;
+		$('input').focus(function(){
+			$(this).parent().find(".label-txt").addClass('label-active');
+		});
+
+		$("input").focusout(function(){
+			if ($(this).val() == '') {
+			$(this).parent().find(".label-txt").removeClass('label-active');
+			};
+		});
+		$("#bs-treeetable").bstreetable({
+			data:nodeData,
+			maintitle:"Fields",
+			nodeaddCallback:function(data,callback){
+				//alert(JSON.stringify(data));
+				//do your things then callback
+				index = index+1;
+				callback({id:index,name:data.name,innercode:"ttttt",pid:data.pid*1});
+			},
+			noderemoveCallback:function(data,callback){
+				// alert(JSON.stringify(data));
+				//do your things then callback
+				callback();
+			},
+			nodeupdateCallback:function(data,callback){
+				//alert(JSON.stringify(data));
+				//do your things then callback
+				callback();
+			}
+		}
+		);
+	}	
+	// $("#bs-ml-treetable").bstreetable({
+	// 	data:data,
+	// 	maintitle:"testing",
+	// 	nodeaddCallback:function(data,callback){
+	// 		//alert(JSON.stringify(data));
+	// 		//do your things then callback
+	// 		callback({id:18,name:data.name,innercode:"ttttt",pid:data.pid});
+	// 	},
+	// 	noderemoveCallback:function(data,callback){
+	// 		//alert(JSON.stringify(data));
+	// 		//do your things then callback
+	// 		callback();
+	// 	},
+	// 	nodeupdateCallback:function(data,callback){
+	// 		alert(JSON.stringify(data));
+	// 		//do your things then callback
+	// 		callback();
+	// 	},
+	// 	extfield:[
+	// 		{title:"innercode",key:"innercode",type:"input"}
+	// 	]
+	// })
+	function loadJsonData(){
+		document.getElementById("editNodeInfo").style.display="none";
+		$.ajax({//http://ec2-13-250-46-76.ap-southeast-1.compute.amazonaws.com/content_assets.json
+				type: 'GET',
+				url: "http://13.233.76.145/content_assets.json",
+				processData: true,
+				data: {},
+				dataType: "json",
+				success: function (data) {
+					assetsJsonData = data;
+					populateAssetType(data);
+				}
+		});
+		
+		var curElement = $(".tt-body");
+	var curLevel = 1;
+   // presentId = 1;
+	var row = {
+	   id:presentId,
+	   name:"",
+	   pid:0,
+	   level:1,
+	   innercode: "",
+	   pinnercode: "",
+	   guid : "",
+	   type :"",
+	   metadata :"{}",
+	   icon :"icon.jpg",
+	   player:"",
+	   params:"",
+	   showInToc:true,
+	   showInLivePage:false,
+	   downloadId :"target_guid",
+	   src	: "",
+	   rootSrc : ""};
+	//generateTreeNode(curElement,row,curLevel,true);
+	//$("edit_node_info").addClass("setVisable");
+		// $.getJSON('http://ec2-13-250-46-76.ap-southeast-1.compute.amazonaws.com/content_assets.json', function(data) {
+		// myItems = data.items;
+		// console.log(myItems);
+		// });
+		init();
+		
+	}
+	function populateAssetType(data){ 
+		temp={};
+		$('#assetType').append('<option value="0" >slect</option>')
+		for(node in data){
+			var type = data[node].asset_type
+			//console.log(node+"****:"+data[node].asset_type+"=="+type);
+			if(!temp[type]){
+				temp[type] = 1;
+				$('#assetType').append('<option value="'+type+'">'+type+'</option>')
+			}
+		}
+	}
+	function assetVerify(_org){
+		//_type = $('#assetType').val();
+		var e = document.getElementById("assetInfo");
+		_guid = e.options[e.selectedIndex].value;
+		_text = e.options[e.selectedIndex].text;
+		_icon = e.options[e.selectedIndex].getAttribute('data-icon');
+		_player = e.options[e.selectedIndex].getAttribute('data-player');
+		//_player = e.options[e.selectedIndex].data('player');
+		_range = e.options[e.selectedIndex].getAttribute('data-range');
+		
+			if(_player=="pdf"){
+				try{
+
+				
+				//start_page
+				//$('#start_page').value = 1;
+				//$('#start_page').min = 1;
+				$('#start_page').attr('value',1);
+				$('#start_page').attr('min',1);
+				$('#start_page').attr('max',_range);
+
+				// $('#end_page').value = _range;
+				// $('#end_page').min = 1;
+				// $('#end_page').max = _range;
+				
+				$('#end_page').attr('value',1);
+				$('#end_page').attr('min',1);
+				$('#end_page').attr('max',_range);
+				console.log("range:************"+_range)
+				}catch(er){
+					console.log(er)
+				}
+			}else{
+				document.getElementById('paramsLabel_2').style.display="none";
+			}
+	}
+	function populateAssets(_org){
+		temp={};
+		$('#assetInfo').html("");
+		_type = $(_org).val();
+		//console.log("_type:"+_type)
+		if(_type=="pdf"){
+			$('#startPageGroup').css("display","");
+			$('#endPageGroup').css("display","");
+
+		}
+		else{			
+			$('#startPageGroup').css("display","none");
+			$('#endPageGroup').css("display","none");
+		}
+		$('#assetInfo').append('<option value="0" >slect</option>')
+		for(node in assetsJsonData){
+			var name = assetsJsonData[node].name;
+			var player = assetsJsonData[node].player;
+			//console.log("assetsJsonData[node].icon_url:***"+assetsJsonData[node].icon_url);
+			var icon = assetsJsonData[node].icon_url;
+			var range=0;
+			if(player=="pdf"){
+				try{
+				
+				range = assetsJsonData[node].page_count;
+				//start_page
+				console.log("range:"+range)
+				}catch(er){
+					console.log(er)
+				}
+			}
+			//console.log(node+"****:"+assetsJsonData[node].asset_type+"=="+_type);
+			if(assetsJsonData[node].asset_type==_type){	
+				$('#assetInfo').append('<option value="'+assetsJsonData[node].guid+'" data-player="'+player+'" data-icon="'+icon+'" data-range="'+range+'"  >'+name+'</option>');
+			}
+		}
+	}
+	function linkAsset(){
+		var e = document.getElementById("assetType");
+		_type = e.options[e.selectedIndex].value;
+		if(_type=="pdf" && $("#start_page").val()>$("#end_page").val()){
+			alert("Start page '"+$("#start_page").val()+"' should not be more than End Page'"+$("#end_page").val()+"'");
+			return;
+		}
+		//$(".container").css("width","100%");
+		//_type = $('#assetType').val();
+		var e = document.getElementById("assetInfo");
+		_guid = e.options[e.selectedIndex].value;
+		_text = e.options[e.selectedIndex].text;
+		_icon = e.options[e.selectedIndex].getAttribute('data-icon');
+		_player = e.options[e.selectedIndex].getAttribute('data-player');
+		//_player = e.options[e.selectedIndex].data('player');
+		_range = e.options[e.selectedIndex].getAttribute('data-range');
+		//_range = e.options[e.selectedIndex].data('range');
+		if(!_player)
+			_player = _type;
+		//_name = $('#assetInfo').val();
+		console.log("_type:"+_type+"*****_guid:"+_guid+"*****_text:"+_text+"*****_icon:"+_icon+"*****_player:"+_player+"****_range:"+_range)
+		$("#addasset_"+selectedId).css("display","none");
+		
+		let temp = _text.split("_");
+		let lastorg = temp[temp.length-1];
+		if(lastorg*1){
+			lastorg = temp[temp.length-2]
+		}
+		$("#labelinput_"+selectedId).val(lastorg);
+		document.getElementById("editNodeInfo").style.display="none";
+		$('#assetType').val('0');
+		$('#assetInfo').html("");
+		// try{
+		// 		$('#start_page').value = 1;
+		// 		$('#start_page').min = 1;
+		// 		$('#start_page').max = _range;
+
+		// 		$('#end_page').value = _range;
+		// 		$('#end_page').min = 1;
+		// 		$('#end_page').max = _range;
+		
+		// }catch(er){
+		// 	console.log("er111:"+er);
+		// }				
+		
+		
+		var _arg = {};
+		try{
+
+		if(_type=="pdf")
+			$('#labelIcons_'+selectedId).attr("class","fa fa-file-pdf-o p-xs");
+		else if(_type=="mp4")
+			$('#labelIcons_'+selectedId).attr("class","fa fa-file-video-o p-xs");
+		else if(_type=="html5")
+			$('#labelIcons_'+selectedId).attr("class","fa fa-file p-xs");
+		else if(_type=="assessment")
+			$('#labelIcons_'+selectedId).attr("class","fa fa-puzzle-piece p-xs");
+		else
+			$('#labelIcons_'+selectedId).attr("class","fa fa-book p-xs");
+		  
+		}catch(er){
+			alert("er 232:"+er)
+		}      
+			_arg= {"startPage":$("#start_page").val(),"endPage":$("#end_page").val()};
+		console.log(_type+"******_arg:"+JSON.stringify(_arg)+"*******"+(_type=="pdf"));
+		var isShowinToc = $("input[name='showintoc']:checked").val();
+
+		// $('input[name="showintoc"]').prop('checked', false);
+		// $('input[name="showintoc"]').attr('checked', false);
+		var isShowinLivepage = $("input[name='showinlivepage']:checked").val();
+		// $('input[name="showinlivepage"]').prop('checked', false);
+		// $('input[name="showinlivepage"]').attr('checked', false);
+		//if(isShowinToc=="false")
+		$("input[name='showintoc']").parent().removeClass('active')
+		//if(isShowinLivepage=="false")
+		$("input[name='showinlivepage']").parent().removeClass('active')
+		$("input[name='showintoc']").removeAttr("checked");
+		$("input[name='showinlivepage']").removeAttr("checked");
+		tocdata[selectedId].name = lastorg;
+		tocdata[selectedId].itemType = _type;
+		tocdata[selectedId].icon = _icon;
+		tocdata[selectedId].player= _player;		
+		tocdata[selectedId].params=_arg;
+		tocdata[selectedId].showInToc= isShowinToc;
+		tocdata[selectedId].showInLivePage = isShowinLivepage;
+		tocdata[selectedId].downloadId = _guid;
+		$("#displaynameLabel_"+selectedId).text(lastorg);
+		$("#typeLabel_"+selectedId).text(_type);
+		$("#iconLabel_"+selectedId).text(_icon);
+		$("#playerLabel_"+selectedId).text(_player);
+		$("#paramsLabel_"+selectedId).text(JSON.stringify(_arg));
+		$("#showintocLabel_"+selectedId).text(isShowinToc);
+		$("#showinlivepageLabel_"+selectedId).text(isShowinLivepage);
+		$("#downloadidLabel_"+selectedId).text(_guid);
+		
+		$("#assetInfoLabel_"+selectedId).css("display","inline");
+			  
+//>guidLabel,displaynameLabel,typeLabel,iconLabel\,paramsLabel,showintocLabel,showinlivepageLabel,downloadidLabel
+				
+		//console.log(JSON.stringify(tocdata))
+	}
+	function getGUID() {
+		function s4() {
+			return Math.floor((1 + Math.random()) * 0x10000)
+			.toString(16)
+			.substring(1);
+		}
+		return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
+	}
+</script>
+</body>
+</html>
